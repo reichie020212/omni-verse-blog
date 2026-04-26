@@ -1,0 +1,26 @@
+---
+id: '0x4f1'
+title: 'Rust is the language I stop being clever in'
+slug: 'rust-is-the-language-i-stop-being-clever-in'
+excerpt: 'After a decade of "look how concise I can make this," the borrow checker walked in and politely asked me to grow up.'
+category: programming
+tags: [rust, languages, opinion]
+date: '2026-04-19'
+readTime: 6
+size: wide
+cover: rust
+---
+
+I used to take pride in writing the densest possible one-liner. A nested ternary inside a map inside a reduce. I thought this was taste. It was not.
+
+## The compiler is not the enemy
+
+Rust does not let you be sloppy. It is not punishing you. It is asking, very politely, for you to make the implicit explicit.
+
+```rust
+fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
+    if x.len() > y.len() { x } else { y }
+}
+```
+
+The first time you internalize lifetimes, you stop being scared of them. The second time, you start to miss them in other languages.
