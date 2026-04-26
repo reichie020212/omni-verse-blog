@@ -26,6 +26,7 @@ export default defineConfig({
       E2E_TEST: '1',
       AUTH_SECRET: 'test-secret-test-secret-test-secret-aaaaa',
       AUTH_TRUST_HOST: 'true',
+      AUTH_URL: `http://localhost:${PORT}`,
       SITE_URL: `http://localhost:${PORT}`,
     },
   },

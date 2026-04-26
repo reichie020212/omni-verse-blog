@@ -19,5 +19,6 @@ export async function checkA11y(page: Page): Promise<void> {
 export async function signInAsE2E(page: Page): Promise<void> {
   await page.goto('/signin');
   await page.getByTestId('e2e-signin').click();
-  await expect(page).toHaveURL(/\/$|\/(?!signin)/);
+  // Wait until the page has navigated away from /signin and settled.
+  await expect(page).toHaveURL(/^(?!.*\/signin).*$/, { timeout: 10_000 });
 }

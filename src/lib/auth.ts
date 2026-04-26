@@ -44,4 +44,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: baseProviders,
   session: { strategy: env.E2E_TEST === '1' ? 'jwt' : 'database' },
   pages: { signIn: '/signin' },
+  callbacks: {
+    // In JWT mode (E2E only), surface the user id on session.user so server
+    // actions that read session.user.id behave the same as in DB-session mode.
+    async jwt({ token, user }) {
+      if (user?.id) token.sub = user.id;
+      return token;
+    },
+    async session({ session, token, user }) {
+      if (session.user) {
+        session.user.id = (user?.id ?? token?.sub) as string;
+      }
+      return session;
+    },
+  },
 });
