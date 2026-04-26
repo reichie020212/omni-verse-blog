@@ -1785,3 +1785,19 @@ button { font-family: inherit; cursor: pointer; }
   color: var(--accent);
   text-decoration: underline;
 }
+
+/* Phase 4a — reduced-motion completeness pass */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .cursor {
+    animation: none;
+  }
+  .post-card:hover {
+    transform: none;
+  }
+  .sidebar-link:hover {
+    transform: none;
+  }
+}
