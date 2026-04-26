@@ -1,5 +1,13 @@
-import { describe, it, expect } from 'vitest';
-import { parsePost, PostFrontmatterSchema } from './posts';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { mkdtempSync, rmSync, writeFileSync, mkdirSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import {
+  parsePost,
+  PostFrontmatterSchema,
+  assertUniqueIdsAndSlugs,
+  loadPostsFromDir,
+} from './posts';
 
 const VALID = `---
 id: '0x4f2'
@@ -78,5 +86,93 @@ describe('PostFrontmatterSchema', () => {
       cover: 'jovian',
     });
     expect(result.success).toBe(true);
+  });
+});
+
+function makePost(slug: string, overrides: Record<string, string> = {}) {
+  const fm = {
+    id: "'0x4f0'",
+    title: "'T'",
+    slug: `'${slug}'`,
+    excerpt: "'E'",
+    category: 'celestial',
+    tags: '[a]',
+    date: "'2026-04-22'",
+    readTime: '9',
+    size: 'hero',
+    cover: 'jovian',
+    ...overrides,
+  };
+  const body = Object.entries(fm)
+    .map(([k, v]) => `${k}: ${v}`)
+    .join('\n');
+  return `---\n${body}\n---\nBody`;
+}
+
+describe('loadPostsFromDir + assertUniqueIdsAndSlugs', () => {
+  let dir: string;
+  beforeAll(() => {
+    dir = mkdtempSync(path.join(tmpdir(), 'posts-'));
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(path.join(dir, 'post-a.mdx'), makePost('post-a', { id: "'0x001'" }));
+    writeFileSync(path.join(dir, 'post-b.mdx'), makePost('post-b', { id: "'0x002'" }));
+  });
+  afterAll(() => rmSync(dir, { recursive: true, force: true }));
+
+  it('loads all valid posts', async () => {
+    const posts = await loadPostsFromDir(dir);
+    expect(posts).toHaveLength(2);
+    expect(posts.map((p) => p.slug).sort()).toEqual(['post-a', 'post-b']);
+  });
+
+  it('passes uniqueness check when all ids and slugs are unique', async () => {
+    const posts = await loadPostsFromDir(dir);
+    expect(() => assertUniqueIdsAndSlugs(posts)).not.toThrow();
+  });
+
+  it('throws when two posts share an id', () => {
+    const dupes = [
+      { id: '0x001', slug: 'a' } as never,
+      { id: '0x001', slug: 'b' } as never,
+    ];
+    expect(() => assertUniqueIdsAndSlugs(dupes)).toThrow(/duplicate id/i);
+  });
+
+  it('throws when two posts share a slug', () => {
+    const dupes = [
+      { id: '0x001', slug: 'a' } as never,
+      { id: '0x002', slug: 'a' } as never,
+    ];
+    expect(() => assertUniqueIdsAndSlugs(dupes)).toThrow(/duplicate slug/i);
+  });
+});
+
+describe('sort and draft handling', () => {
+  let dir: string;
+  beforeAll(() => {
+    dir = mkdtempSync(path.join(tmpdir(), 'posts-sort-'));
+    writeFileSync(path.join(dir, 'old.mdx'), makePost('old', { id: "'0x010'", date: "'2026-01-01'" }));
+    writeFileSync(path.join(dir, 'new.mdx'), makePost('new', { id: "'0x011'", date: "'2026-04-01'" }));
+    writeFileSync(
+      path.join(dir, 'wip.mdx'),
+      makePost('wip', { id: "'0x012'", date: "'2025-12-01'", draft: 'true' }),
+    );
+  });
+  afterAll(() => rmSync(dir, { recursive: true, force: true }));
+
+  it('sorts newest-first', async () => {
+    const posts = await loadPostsFromDir(dir);
+    expect(posts[0].slug).toBe('new');
+    expect(posts[1].slug).toBe('old');
+  });
+
+  it('keeps drafts in development load', async () => {
+    const posts = await loadPostsFromDir(dir, { includeDrafts: true });
+    expect(posts.some((p) => p.draft)).toBe(true);
+  });
+
+  it('strips drafts when includeDrafts is false', async () => {
+    const posts = await loadPostsFromDir(dir, { includeDrafts: false });
+    expect(posts.some((p) => p.draft)).toBe(false);
   });
 });
