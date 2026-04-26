@@ -8,3 +8,5 @@ node_modules/
 public/search-index.json
 tsconfig.tsbuildinfo
 *.tsbuildinfo
+local.db
+local.db-journal
