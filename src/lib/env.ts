@@ -17,10 +17,13 @@ export const envSchema = z.object({
 
 export type Env = z.infer<typeof envSchema>;
 
-const parsed = envSchema.parse(process.env);
-
-if (parsed.NODE_ENV === 'production' && parsed.E2E_TEST === '1') {
-  throw new Error('E2E_TEST=1 is not allowed in production');
+export function assertNotE2EInProduction(parsed: Env): void {
+  if (parsed.NODE_ENV === 'production' && parsed.E2E_TEST === '1') {
+    throw new Error('E2E_TEST=1 is not allowed in production');
+  }
 }
+
+const parsed = envSchema.parse(process.env);
+assertNotE2EInProduction(parsed);
 
 export const env = parsed;

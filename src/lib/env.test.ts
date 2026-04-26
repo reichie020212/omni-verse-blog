@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { envSchema } from './env';
+import { assertNotE2EInProduction, envSchema, type Env } from './env';
 
 describe('envSchema', () => {
   const valid = {
@@ -47,5 +47,40 @@ describe('envSchema', () => {
 
   it('rejects E2E_TEST values outside the enum', () => {
     expect(() => envSchema.parse({ ...valid, E2E_TEST: 'true' })).toThrow();
+  });
+
+  it('throws if E2E_TEST=1 in production', () => {
+    const parsed: Env = {
+      AUTH_SECRET: 'a'.repeat(32),
+      DATABASE_URL: 'file:local.db',
+      SITE_URL: 'http://localhost:3000',
+      E2E_TEST: '1',
+      NODE_ENV: 'production',
+    };
+    expect(() => assertNotE2EInProduction(parsed)).toThrow(
+      /E2E_TEST=1 is not allowed in production/,
+    );
+  });
+
+  it('does not throw when E2E_TEST=1 outside production', () => {
+    const parsed: Env = {
+      AUTH_SECRET: 'a'.repeat(32),
+      DATABASE_URL: 'file:local.db',
+      SITE_URL: 'http://localhost:3000',
+      E2E_TEST: '1',
+      NODE_ENV: 'development',
+    };
+    expect(() => assertNotE2EInProduction(parsed)).not.toThrow();
+  });
+
+  it('does not throw in production when E2E_TEST=0', () => {
+    const parsed: Env = {
+      AUTH_SECRET: 'a'.repeat(32),
+      DATABASE_URL: 'file:local.db',
+      SITE_URL: 'http://localhost:3000',
+      E2E_TEST: '0',
+      NODE_ENV: 'production',
+    };
+    expect(() => assertNotE2EInProduction(parsed)).not.toThrow();
   });
 });
