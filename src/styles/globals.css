@@ -1081,3 +1081,15 @@ button { font-family: inherit; cursor: pointer; }
   --font-mono:  var(--font-mono-loaded,  'JetBrains Mono',  ui-monospace, 'SF Mono', Menlo, monospace);
   --font-serif: var(--font-serif-loaded, 'Source Serif 4',  Georgia, serif);
 }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
