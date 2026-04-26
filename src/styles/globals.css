@@ -1107,3 +1107,30 @@ button { font-family: inherit; cursor: pointer; }
   z-index: 2;
 }
 .card a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+.skip-link:focus {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  background: var(--bg-elevated);
+  color: var(--fg);
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.layout-with-sidebar {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 0;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .layout-with-sidebar { grid-template-columns: 1fr; }
+  .layout-with-sidebar .sidebar { display: none; }
+}

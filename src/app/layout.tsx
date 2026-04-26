@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono, Source_Serif_4 } from 'next/font/google';
+import { SearchProvider } from '@/components/SearchProvider';
+import { Topbar } from '@/components/Topbar';
 import '@/styles/globals.css';
 
 const inter = Inter({
@@ -43,7 +45,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <SearchProvider>
+          <a href="#main" className="skip-link">
+            Skip to content
+          </a>
+          <Topbar />
+          <main id="main" className="main-content">
+            {children}
+          </main>
+        </SearchProvider>
+      </body>
     </html>
   );
 }

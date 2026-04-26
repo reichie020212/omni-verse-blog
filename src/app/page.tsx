@@ -1,8 +1,13 @@
-export default function Home() {
+import { Sidebar } from '@/components/Sidebar';
+import { getAllPosts } from '@/lib/posts';
+import { FilteredGrid } from '@/components/FilteredGrid';
+
+export default async function HomePage() {
+  const posts = await getAllPosts();
   return (
-    <main style={{ padding: 32 }}>
-      <h1>Omni-Verse Blog — scaffold</h1>
-      <p>Phase 1 in progress.</p>
-    </main>
+    <div className="layout-with-sidebar">
+      <Sidebar />
+      <FilteredGrid posts={posts} />
+    </div>
   );
 }
