@@ -1,6 +1,3 @@
-import { existsSync } from 'node:fs';
-import path from 'node:path';
-import Image from 'next/image';
 import { DefaultCover } from './default';
 import { JovianCover } from './jovian';
 import { RustCover } from './rust';
@@ -36,13 +33,6 @@ const GENERATORS: Record<string, React.ComponentType<{ seed: string; size: Size 
   paint: PaintCover,
 };
 
-const ASPECT: Record<Size, { w: number; h: number }> = {
-  hero: { w: 1600, h: 900 },
-  wide: { w: 1600, h: 900 },
-  medium: { w: 800, h: 600 },
-  small: { w: 800, h: 800 },
-};
-
 export function Cover({
   cover,
   slug,
@@ -52,19 +42,6 @@ export function Cover({
   slug: string;
   size: Size;
 }) {
-  const jpgPath = path.join(process.cwd(), 'public', 'covers', `${cover}.jpg`);
-  if (existsSync(jpgPath)) {
-    const a = ASPECT[size];
-    return (
-      <Image
-        src={`/covers/${cover}.jpg`}
-        alt=""
-        width={a.w}
-        height={a.h}
-        priority={size === 'hero'}
-      />
-    );
-  }
   const Generator = GENERATORS[cover] ?? DefaultCover;
   return <Generator seed={slug} size={size} />;
 }

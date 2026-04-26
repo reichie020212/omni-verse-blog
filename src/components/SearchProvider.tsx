@@ -65,6 +65,7 @@ export function SearchProvider({
   );
 
   const matchedSlugs = useMemo<Set<string> | null>(() => {
+    void index; // depend on index loading so the memo recomputes once fuse is ready
     const q = query.trim();
     if (q === '') return null;
     if (!fuseRef.current) return new Set();
