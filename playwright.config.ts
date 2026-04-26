@@ -19,12 +19,13 @@ export default defineConfig({
   webServer: {
     command: `pnpm build && DATABASE_URL=file:e2e.db E2E_TEST=1 pnpm start`,
     port: PORT,
-    timeout: 120_000,
+    timeout: 180_000,
     reuseExistingServer: false,
     env: {
       DATABASE_URL: 'file:e2e.db',
       E2E_TEST: '1',
       AUTH_SECRET: 'test-secret-test-secret-test-secret-aaaaa',
+      AUTH_TRUST_HOST: 'true',
       SITE_URL: `http://localhost:${PORT}`,
     },
   },

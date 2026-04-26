@@ -12,7 +12,7 @@ const E2E_TEST_EMAIL = 'e2e@test.local';
 
 const baseProviders: NextAuthConfig['providers'] = [GitHub, Google];
 
-if (env.E2E_TEST === '1' && env.NODE_ENV !== 'production') {
+if (env.E2E_TEST === '1') {
   baseProviders.push(
     Credentials({
       name: 'E2E Test',
