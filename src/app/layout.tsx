@@ -3,6 +3,8 @@ import { Inter, JetBrains_Mono, Source_Serif_4 } from 'next/font/google';
 import { SearchProvider } from '@/components/SearchProvider';
 import { Topbar } from '@/components/Topbar';
 import { ReadingProgress } from '@/components/ReadingProgress';
+import { ToastProvider } from '@/components/ToastProvider';
+import { Toast } from '@/components/Toast';
 import '@/styles/globals.css';
 
 const inter = Inter({
@@ -54,15 +56,18 @@ export default function RootLayout({
       </head>
       <body>
         <SearchProvider>
-          <ReadingProgress />
-          <a href="#main" className="skip-link">
-            Skip to content
-          </a>
-          <Topbar />
-          <main id="main" className="main-content">
-            {children}
-          </main>
-          {drawer}
+          <ToastProvider>
+            <ReadingProgress />
+            <a href="#main" className="skip-link">
+              Skip to content
+            </a>
+            <Topbar />
+            <main id="main" className="main-content">
+              {children}
+            </main>
+            {drawer}
+            <Toast />
+          </ToastProvider>
         </SearchProvider>
       </body>
     </html>
