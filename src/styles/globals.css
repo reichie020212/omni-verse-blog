@@ -1283,3 +1283,57 @@ button { font-family: inherit; cursor: pointer; }
   background: var(--bg-subtle);
   color: var(--fg);
 }
+
+.related-posts {
+  margin: 64px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.related-heading {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--fg-muted);
+  margin: 0 0 16px;
+}
+.related-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 720px) {
+  .related-list { grid-template-columns: 1fr; }
+}
+.related-link {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+.related-cover {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 6px;
+}
+.related-cover svg,
+.related-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.related-date {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fg-faint);
+}
+.related-title {
+  font-size: 14px;
+  margin: 4px 0 0;
+  line-height: 1.35;
+}

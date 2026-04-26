@@ -3,6 +3,7 @@ import { getAllPosts, getPostBySlug } from '@/lib/posts';
 import { ArticleHeader } from '@/components/ArticleHeader';
 import { ArticleBody } from '@/components/ArticleBody';
 import { ArticleFooter } from '@/components/ArticleFooter';
+import { RelatedPosts } from '@/components/RelatedPosts';
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();
@@ -29,6 +30,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       <ArticleHeader post={post} />
       <ArticleBody source={post.body} />
       <ArticleFooter post={post} />
+      <RelatedPosts post={post} />
     </article>
   );
 }

@@ -4,6 +4,7 @@ import { PostDrawer } from '@/components/PostDrawer';
 import { ArticleHeader } from '@/components/ArticleHeader';
 import { ArticleBody } from '@/components/ArticleBody';
 import { ArticleFooter } from '@/components/ArticleFooter';
+import { RelatedPosts } from '@/components/RelatedPosts';
 
 export default async function InterceptedPost({
   params,
@@ -19,6 +20,7 @@ export default async function InterceptedPost({
         <ArticleHeader post={post} />
         <ArticleBody source={post.body} />
         <ArticleFooter post={post} />
+        <RelatedPosts post={post} />
       </article>
     </PostDrawer>
   );
