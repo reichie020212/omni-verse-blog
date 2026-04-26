@@ -176,3 +176,20 @@ describe('sort and draft handling', () => {
     expect(posts.some((p) => p.draft)).toBe(false);
   });
 });
+
+describe('applySort', () => {
+  const a = { slug: 'a', date: '2026-01-01' } as never;
+  const b = { slug: 'b', date: '2026-04-01' } as never;
+  const c = { slug: 'c', date: '2026-02-01' } as never;
+  const newestFirst = [b, c, a];
+
+  it('returns the input unchanged when sort is "newest"', async () => {
+    const { applySort } = await import('./posts');
+    expect(applySort(newestFirst, 'newest')).toEqual(newestFirst);
+  });
+
+  it('reverses to oldest-first when sort is "oldest"', async () => {
+    const { applySort } = await import('./posts');
+    expect(applySort(newestFirst, 'oldest')).toEqual([a, c, b]);
+  });
+});

@@ -106,3 +106,15 @@ export async function getCategoryCounts(): Promise<Record<string, number>> {
   for (const p of all) out[p.category] = (out[p.category] ?? 0) + 1;
   return out;
 }
+
+export type Sort = 'newest' | 'oldest';
+
+export function applySort<T extends { date: string }>(
+  posts: readonly T[],
+  sort: Sort,
+): T[] {
+  if (sort === 'oldest') {
+    return [...posts].sort((a, b) => a.date.localeCompare(b.date));
+  }
+  return [...posts];
+}
