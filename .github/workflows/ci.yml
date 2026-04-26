@@ -8,15 +8,32 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    env:
+      # `src/lib/env.ts` parses process.env at module load. env.test.ts
+      # imports the side-effecting module, which requires AUTH_SECRET ≥32 chars
+      # to be present. This is a CI-only fixture — never used to sign anything.
+      AUTH_SECRET: ci-test-secret-thirty-two-chars-aaaa
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: pnpm/action-setup@v4
         with:
           version: 9
+
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm validate
-      - run: pnpm build
+          node-version: '22'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Unit tests
+        run: pnpm test
