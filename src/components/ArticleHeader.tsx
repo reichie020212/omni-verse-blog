@@ -1,6 +1,7 @@
 import { fmtDate } from '@/lib/format';
 import { Cover } from '@/covers';
 import type { Post } from '@/lib/posts';
+import { ShareButton } from './ShareButton';
 
 export function ArticleHeader({ post }: { post: Post }) {
   return (
@@ -10,6 +11,7 @@ export function ArticleHeader({ post }: { post: Post }) {
         <span className="article-category">{post.category}</span>
         <span className="article-date">{fmtDate(post.date)}</span>
         <span className="article-readtime">{post.readTime} min read</span>
+        <ShareButton url={`/posts/${post.slug}`} title={post.title} />
       </div>
       <h1 className="article-title">{post.title}</h1>
       <p className="article-excerpt">{post.excerpt}</p>

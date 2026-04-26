@@ -1266,3 +1266,20 @@ button { font-family: inherit; cursor: pointer; }
     transform: translateX(-50%);
   }
 }
+
+.share-button {
+  margin-left: auto;
+  background: transparent;
+  color: var(--fg-muted);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+.share-button:hover {
+  background: var(--bg-subtle);
+  color: var(--fg);
+}
