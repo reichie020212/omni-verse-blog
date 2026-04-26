@@ -16,3 +16,7 @@ e2e.db-*
 playwright-report/
 test-results/
 .playwright/
+
+# Phase 4b — production deploy state
+.env.production
+data/
