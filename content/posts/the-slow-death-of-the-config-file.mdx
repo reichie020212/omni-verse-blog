@@ -1,0 +1,18 @@
+---
+id: '0x4ef'
+title: 'The slow death of the config file'
+slug: 'the-slow-death-of-the-config-file'
+excerpt: 'YAML, TOML, JSON, and now whatever this new thing is. We keep reinventing the same problem because we refuse to admit configuration is code.'
+category: tech
+tags: [devtools, opinion, infra]
+date: '2026-04-10'
+readTime: 7
+size: medium
+cover: config
+---
+
+Every five years we agree the current configuration format is bad and replace it with a new one that is bad in different ways.
+
+## It is code. It has always been code.
+
+The moment your config has conditionals, references, or environment branching, you are writing a program in a language designed by someone who did not want to admit they were designing a language.
