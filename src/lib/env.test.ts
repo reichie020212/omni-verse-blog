@@ -83,4 +83,23 @@ describe('envSchema', () => {
     };
     expect(() => assertNotE2EInProduction(parsed)).not.toThrow();
   });
+
+  it('accepts AUTH_URL when valid', () => {
+    expect(() =>
+      envSchema.parse({ ...valid, AUTH_URL: 'https://blog.example.com' }),
+    ).not.toThrow();
+  });
+
+  it('rejects AUTH_URL that is not a URL', () => {
+    expect(() => envSchema.parse({ ...valid, AUTH_URL: 'not-a-url' })).toThrow();
+  });
+
+  it('accepts AUTH_TRUST_HOST=true', () => {
+    const parsed = envSchema.parse({ ...valid, AUTH_TRUST_HOST: 'true' });
+    expect(parsed.AUTH_TRUST_HOST).toBe('true');
+  });
+
+  it('rejects AUTH_TRUST_HOST=yes', () => {
+    expect(() => envSchema.parse({ ...valid, AUTH_TRUST_HOST: 'yes' })).toThrow();
+  });
 });

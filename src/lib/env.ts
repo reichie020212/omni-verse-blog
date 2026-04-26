@@ -10,6 +10,8 @@ export const envSchema = z.object({
   AUTH_GOOGLE_SECRET: z.string().optional(),
   DATABASE_URL: z.string().default('file:local.db'),
   DATABASE_AUTH_TOKEN: z.string().optional(),
+  AUTH_URL: z.string().url().optional(),
+  AUTH_TRUST_HOST: z.enum(['true', 'false']).optional(),
   SITE_URL: z.string().url().default('http://localhost:3000'),
   E2E_TEST: z.enum(['0', '1']).default('0'),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
