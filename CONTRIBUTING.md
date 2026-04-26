@@ -1,6 +1,6 @@
 # Contributing
 
-This is a personal blog, so "contributing" really means "Red writes posts." This doc covers the post authoring workflow.
+This is a personal blog, so "contributing" really means "Red writes posts." This doc is the schema reference; for a screenshot-rich walkthrough see [`docs/guide/author.md`](./docs/guide/author.md).
 
 ## Authoring a new post
 

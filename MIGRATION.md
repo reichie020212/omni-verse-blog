@@ -18,7 +18,13 @@ How the production blog deviates from the prototype at `/Users/red/ClaudeDesign/
 - Phase 2 — drawer routing, reading progress, related posts, sort, search results page
 - Phase 3 — Auth.js, Drizzle + libsql, likes, bookmarks (with anon→signed-in merge), comments
 - Phase 4a — `pnpm new-post` CLI, OG/Twitter cards, sitemap, robots, Atom feed, JPG cover manifest, security headers, env validation, Playwright + axe-core, README/CONTRIBUTING/MIGRATION
-- Phase 4b — self-host on Mac mini (Docker Compose + Caddy + sqlite volume + backup scripts)
+- Phase 4b — self-host on Mac mini: multi-stage Dockerfile, `docker-compose.yml` with `web` + `cloudflared` services, programmatic Drizzle migrator on container start, `/api/health` route, host-side launchd backup, GitHub Actions CI
+
+## Phase 4b deviations from the original spec
+
+The Phase 4b spec assumed a Caddy reverse proxy with Let's Encrypt. We dropped Caddy in favor of **Cloudflare Tunnel** routing directly to the Next.js container — CF terminates TLS at the edge, so there's no second proxy and no port-forwarding. This also simplifies `docker-compose.yml` (two services instead of three).
+
+The image overlays a full production `node_modules` from a `prod-deps` stage onto the Next.js standalone bundle so `scripts/start.mjs` can resolve `drizzle-orm/libsql/migrator` and the libsql native binding at boot. This pushes the image to ~800 MB; acceptable for a single-tenant Mac mini deploy.
 
 ## Lighthouse baseline (Phase 4a, 2026-04-27)
 
@@ -36,5 +42,5 @@ a11y is strong (96) thanks to the axe-core integration in Playwright catching re
 ## Not yet ported
 
 - Real JPG cover photos for the prototype's hand-curated covers (drop into `public/covers/<slug>.jpg`; manifest auto-detects on next build).
-- Full Content Security Policy — deferred to Phase 4b at the Caddy layer where we know the production hostname and inline-script hashes.
-- CI workflow (`.github/workflows/ci.yml`) — deferred to Phase 4b alongside deployment.
+- Full Content Security Policy — would need to be set at Cloudflare's edge (Workers / Page Rules) since CF Tunnel routes plain HTTP to the origin. Deferred indefinitely; the standard headers from Phase 4a (HSTS in prod, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy) are in place.
+- Offsite backups — Time Machine handles this for now. Optional future: rclone to CF R2.

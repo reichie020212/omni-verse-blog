@@ -43,14 +43,25 @@ All env vars are validated by `src/lib/env.ts` at boot.
 | `AUTH_SECRET` | yes | — | Auth.js session signing key (≥32 chars) |
 | `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` | no | — | GitHub OAuth |
 | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | no | — | Google OAuth |
-| `DATABASE_URL` | no | `file:local.db` | libsql/Turso connection |
-| `DATABASE_AUTH_TOKEN` | no | — | Required for Turso, blank for local |
+| `DATABASE_URL` | no | `file:local.db` | libsql/Turso connection. Self-host uses `file:/data/local.db` |
+| `DATABASE_AUTH_TOKEN` | no | — | Required for Turso, blank for libsql file mode |
 | `SITE_URL` | no | `http://localhost:3000` | Public origin (sitemap, OG, feed) |
+| `AUTH_URL` | no | — | Required behind a proxy (set to `https://<HOSTNAME>` in production) |
+| `AUTH_TRUST_HOST` | no | — | Set to `true` in production behind Cloudflare Tunnel / any proxy |
 | `E2E_TEST` | no | `0` | `1` enables the test Credentials provider (do not set in production) |
+
+## Walkthroughs
+
+- **[`docs/guide/reader.md`](./docs/guide/reader.md)** — visitor's tour of the blog (browsing, search, drawer, dark mode, bookmarks, comments) with screenshots
+- **[`docs/guide/author.md`](./docs/guide/author.md)** — writing & publishing posts (CLI, frontmatter, MDX, covers, OG, draft → publish)
 
 ## Authoring
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full content workflow.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the frontmatter schema reference and [`docs/guide/author.md`](./docs/guide/author.md) for the visual walkthrough.
+
+## Deploying
+
+See [DEPLOY.md](./DEPLOY.md) for the self-host walkthrough — Cloudflare Tunnel, Docker Compose, backups, rollback.
 
 ## Project structure
 
@@ -69,9 +80,9 @@ E2E tests use a separate `e2e.db` (gitignored) and a gated test-only Credentials
 - Phase 2 — drawer, progress, related, sort, search — complete
 - Phase 3 — auth, DB, likes, bookmarks, comments — complete
 - Phase 4a — quality, SEO, OG cards, E2E, docs — complete
-- Phase 4b — self-host on Mac mini (Docker, Caddy, backups) — pending
+- Phase 4b — self-host on Mac mini (Docker, Cloudflare Tunnel, backups, CI) — complete
 
-Specs and plans live in `docs/superpowers/`.
+The product is feature-complete. Specs and plans live in `docs/superpowers/`.
 
 ## License
 
