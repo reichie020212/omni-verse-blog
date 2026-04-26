@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono, Source_Serif_4 } from 'next/font/google';
+import { AuthSessionProvider } from '@/components/AuthSessionProvider';
 import { SearchProvider } from '@/components/SearchProvider';
 import { Topbar } from '@/components/Topbar';
 import { ReadingProgress } from '@/components/ReadingProgress';
@@ -55,20 +56,22 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <SearchProvider>
-          <ToastProvider>
-            <ReadingProgress />
-            <a href="#main" className="skip-link">
-              Skip to content
-            </a>
-            <Topbar />
-            <main id="main" className="main-content">
-              {children}
-            </main>
-            {drawer}
-            <Toast />
-          </ToastProvider>
-        </SearchProvider>
+        <AuthSessionProvider>
+          <SearchProvider>
+            <ToastProvider>
+              <ReadingProgress />
+              <a href="#main" className="skip-link">
+                Skip to content
+              </a>
+              <Topbar />
+              <main id="main" className="main-content">
+                {children}
+              </main>
+              {drawer}
+              <Toast />
+            </ToastProvider>
+          </SearchProvider>
+        </AuthSessionProvider>
       </body>
     </html>
   );
