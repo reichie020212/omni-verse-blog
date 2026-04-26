@@ -12,13 +12,32 @@ export async function generateStaticParams() {
   return posts.map((p) => ({ slug: p.slug }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) return {};
   return {
-    title: `${post.title} — Omni-Verse Blog`,
+    title: post.title,
     description: post.excerpt,
+    openGraph: {
+      type: 'article' as const,
+      title: post.title,
+      description: post.excerpt,
+      publishedTime: post.date,
+      authors: ['Red'],
+      tags: post.tags,
+      images: [`/og/${post.slug}.png`],
+    },
+    twitter: {
+      card: 'summary_large_image' as const,
+      title: post.title,
+      description: post.excerpt,
+      images: [`/og/${post.slug}.png`],
+    },
   };
 }
 

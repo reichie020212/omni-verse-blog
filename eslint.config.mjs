@@ -5,4 +5,16 @@ const compat = new FlatCompat();
 export default [
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   { ignores: ['.next/**', 'node_modules/**', 'public/**', 'scripts/dist/**'] },
+  {
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
+    },
+  },
 ];

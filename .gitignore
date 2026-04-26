@@ -10,3 +10,9 @@ tsconfig.tsbuildinfo
 *.tsbuildinfo
 local.db
 local.db-journal
+public/og/
+e2e.db
+e2e.db-*
+playwright-report/
+test-results/
+.playwright/

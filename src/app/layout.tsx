@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono, Source_Serif_4 } from 'next/font/google';
+import { env } from '@/lib/env';
 import { AuthSessionProvider } from '@/components/AuthSessionProvider';
 import { SearchProvider } from '@/components/SearchProvider';
 import { Topbar } from '@/components/Topbar';
@@ -31,9 +32,28 @@ const sourceSerif = Source_Serif_4({
 });
 
 export const metadata: Metadata = {
-  title: 'Omni-Verse Blog',
+  metadataBase: new URL(env.SITE_URL),
+  title: {
+    default: 'Omni-Verse Blog',
+    template: '%s — Omni-Verse Blog',
+  },
   description:
-    'A blog about tech, programming, celestial bodies, family, and whatever else won’t leave my head.',
+    "A blog about tech, programming, celestial bodies, family, and whatever else won't leave my head.",
+  openGraph: {
+    type: 'website',
+    siteName: 'Omni-Verse Blog',
+    title: 'Omni-Verse Blog',
+    description:
+      "A blog about tech, programming, celestial bodies, family, and whatever else won't leave my head.",
+    images: ['/og/default.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Omni-Verse Blog',
+    description:
+      "A blog about tech, programming, celestial bodies, family, and whatever else won't leave my head.",
+    images: ['/og/default.png'],
+  },
 };
 
 export default function RootLayout({

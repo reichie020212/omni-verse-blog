@@ -11,7 +11,7 @@
   --bg-subtle: #efede6;
   --fg: #14130f;
   --fg-muted: #5a574e;
-  --fg-faint: #8a877c;
+  --fg-faint: #6e6b64;
   --border: #1413100f;
   --border-strong: #14131022;
   --accent: oklch(72% 0.14 155);
@@ -28,7 +28,7 @@
   --bg-subtle: #1c1c1a;
   --fg: #e8e6df;
   --fg-muted: #98968d;
-  --fg-faint: #6a6860;
+  --fg-faint: #828079;
   --border: #ffffff14;
   --border-strong: #ffffff26;
   --accent: oklch(78% 0.16 155);
@@ -1784,4 +1784,18 @@ button { font-family: inherit; cursor: pointer; }
 .comment-form-cta a {
   color: var(--accent);
   text-decoration: underline;
+}
+
+/* Phase 4a — reduced-motion completeness pass */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .brand-cursor {
+    animation: none;
+  }
+  .card:hover,
+  .related-card:hover {
+    transform: none;
+  }
 }

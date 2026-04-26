@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { signIn } from '@/lib/auth';
+import { env } from '@/lib/env';
 
 export default async function SignInPage({
   searchParams,
@@ -37,6 +38,18 @@ export default async function SignInPage({
             Continue with Google
           </button>
         </form>
+        {env.E2E_TEST === '1' ? (
+          <form
+            action={async () => {
+              'use server';
+              await signIn('credentials', { email: 'e2e@test.local', redirectTo });
+            }}
+          >
+            <button type="submit" className="oauth-button" data-testid="e2e-signin">
+              Continue as E2E test user
+            </button>
+          </form>
+        ) : null}
         <p className="signin-back">
           <Link href="/">← Back home</Link>
         </p>
