@@ -1,8 +1,12 @@
 import Link from 'next/link';
+import { auth } from '@/lib/auth';
 import { ThemeToggle } from './ThemeToggle';
 import { SearchInput } from './SearchInput';
+import { UserMenu } from './UserMenu';
+import { SignInButton } from './SignInButton';
 
-export function Topbar() {
+export async function Topbar() {
+  const session = await auth();
   return (
     <header className="topbar" role="banner">
       <Link href="/" className="brand" aria-label="Omni-Verse Blog home">
@@ -18,6 +22,17 @@ export function Topbar() {
       <SearchInput />
       <nav aria-label="Primary" className="topbar-nav">
         <ThemeToggle />
+        {session?.user ? (
+          <UserMenu
+            user={{
+              id: session.user.id!,
+              name: session.user.name,
+              image: session.user.image,
+            }}
+          />
+        ) : (
+          <SignInButton />
+        )}
       </nav>
     </header>
   );

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { CATEGORIES } from '@/lib/categories';
 import { getCategoryCounts, getAllTags } from '@/lib/posts';
+import { auth } from '@/lib/auth';
 
 export async function Sidebar({
   activeCategory,
@@ -9,7 +10,11 @@ export async function Sidebar({
   activeCategory?: string;
   activeTag?: string;
 }) {
-  const [counts, tags] = await Promise.all([getCategoryCounts(), getAllTags()]);
+  const [counts, tags, session] = await Promise.all([
+    getCategoryCounts(),
+    getAllTags(),
+    auth(),
+  ]);
   const popularTags = tags.slice(0, 12);
 
   return (
@@ -37,6 +42,19 @@ export async function Sidebar({
           })}
         </ul>
       </nav>
+
+      {session?.user ? (
+        <nav aria-label="Yours" className="sidebar-section">
+          <h2 className="sidebar-heading">Yours</h2>
+          <ul className="category-list">
+            <li>
+              <Link href="/bookmarks" className="category-link">
+                <span>Bookmarks</span>
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      ) : null}
 
       <nav aria-label="Popular tags" className="sidebar-section">
         <h2 className="sidebar-heading">Popular tags</h2>
