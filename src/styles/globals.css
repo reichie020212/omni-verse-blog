@@ -1721,3 +1721,67 @@ button { font-family: inherit; cursor: pointer; }
   color: var(--accent);
   text-decoration: underline;
 }
+
+.comment-form {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.comment-form textarea {
+  width: 100%;
+  background: var(--bg-elevated);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  font: inherit;
+  resize: vertical;
+  min-height: 96px;
+}
+.comment-form textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.comment-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.comment-form-help {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fg-faint);
+  margin: 0;
+}
+.comment-form-help code {
+  background: var(--code-bg);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+.comment-form button[type='submit'] {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border: 0;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  cursor: pointer;
+}
+.comment-form button[type='submit']:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+.comment-form-cta {
+  margin-top: 24px;
+  padding: 16px;
+  background: var(--bg-subtle);
+  border-radius: 8px;
+  text-align: center;
+}
+.comment-form-cta a {
+  color: var(--accent);
+  text-decoration: underline;
+}

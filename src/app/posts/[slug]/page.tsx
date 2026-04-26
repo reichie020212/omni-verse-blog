@@ -4,6 +4,8 @@ import { ArticleHeader } from '@/components/ArticleHeader';
 import { ArticleBody } from '@/components/ArticleBody';
 import { ArticleFooter } from '@/components/ArticleFooter';
 import { RelatedPosts } from '@/components/RelatedPosts';
+import { CommentList } from '@/components/CommentList';
+import { CommentForm } from '@/components/CommentForm';
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();
@@ -31,6 +33,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       <ArticleBody source={post.body} />
       <ArticleFooter post={post} />
       <RelatedPosts post={post} />
+      <CommentList slug={post.slug} />
+      <CommentForm slug={post.slug} />
     </article>
   );
 }
