@@ -3,10 +3,16 @@ import { Cover } from '@/covers';
 import type { Post } from '@/lib/posts';
 import { ShareButton } from './ShareButton';
 import { LikeButton } from './LikeButton';
+import { BookmarkButton } from './BookmarkButton';
 import { getLikeState } from '@/lib/likes';
+import { getMyBookmarkedSlugs } from '@/lib/bookmarks-actions';
 
 export async function ArticleHeader({ post }: { post: Post }) {
-  const initial = await getLikeState(post.slug);
+  const [initial, mySlugs] = await Promise.all([
+    getLikeState(post.slug),
+    getMyBookmarkedSlugs(),
+  ]);
+  const bookmarked = mySlugs.includes(post.slug);
   return (
     <header className="article-header">
       <div className="article-meta">
@@ -15,6 +21,7 @@ export async function ArticleHeader({ post }: { post: Post }) {
         <span className="article-date">{fmtDate(post.date)}</span>
         <span className="article-readtime">{post.readTime} min read</span>
         <LikeButton slug={post.slug} initial={initial} />
+        <BookmarkButton slug={post.slug} initialBookmarked={bookmarked} />
         <ShareButton url={`/posts/${post.slug}`} title={post.title} />
       </div>
       <h1 className="article-title">{post.title}</h1>

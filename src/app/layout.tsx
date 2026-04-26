@@ -6,6 +6,7 @@ import { Topbar } from '@/components/Topbar';
 import { ReadingProgress } from '@/components/ReadingProgress';
 import { ToastProvider } from '@/components/ToastProvider';
 import { Toast } from '@/components/Toast';
+import { BookmarkSyncBootstrap } from '@/components/BookmarkSyncBootstrap';
 import '@/styles/globals.css';
 
 const inter = Inter({
@@ -59,6 +60,7 @@ export default function RootLayout({
         <AuthSessionProvider>
           <SearchProvider>
             <ToastProvider>
+              <BookmarkSyncBootstrap />
               <ReadingProgress />
               <a href="#main" className="skip-link">
                 Skip to content

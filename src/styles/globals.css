@@ -1613,3 +1613,32 @@ button { font-family: inherit; cursor: pointer; }
   opacity: 0.6;
   cursor: progress;
 }
+
+.bookmark-button {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--fg-muted);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+.bookmark-button[data-bookmarked='true'] {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.bookmark-button:hover {
+  background: var(--bg-subtle);
+}
+.bookmark-button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+.empty-state {
+  color: var(--fg-muted);
+  font-size: 14px;
+  padding: 24px 0;
+}
