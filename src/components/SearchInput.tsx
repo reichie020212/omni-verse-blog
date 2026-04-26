@@ -1,12 +1,14 @@
 'use client';
 
 import { useEffect, useRef, useId } from 'react';
+import { useRouter } from 'next/navigation';
 import { useSearch } from './SearchProvider';
 
 export function SearchInput() {
   const { query, setQuery } = useSearch();
   const ref = useRef<HTMLInputElement>(null);
   const labelId = useId();
+  const router = useRouter();
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -30,8 +32,14 @@ export function SearchInput() {
     return () => window.removeEventListener('keydown', onKey);
   }, [setQuery]);
 
+  function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const q = query.trim();
+    if (q) router.push(`/search?q=${encodeURIComponent(q)}`);
+  }
+
   return (
-    <div className="search-wrap">
+    <form className="search-wrap" onSubmit={onSubmit} role="search">
       <label htmlFor={labelId} className="visually-hidden">
         Search posts
       </label>
@@ -46,6 +54,6 @@ export function SearchInput() {
         autoComplete="off"
         spellCheck={false}
       />
-    </div>
+    </form>
   );
 }
