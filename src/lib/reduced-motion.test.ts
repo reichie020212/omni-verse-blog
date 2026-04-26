@@ -34,7 +34,7 @@ describe('reduced motion CSS', () => {
   });
 
   it('disables blinking topbar cursor', () => {
-    expect(all).toMatch(/\.cursor[\s\S]*?animation:\s*none/);
+    expect(all).toMatch(/\.brand-cursor[\s\S]*?animation:\s*none/);
   });
 
   it('overrides smooth scroll on html', () => {
@@ -42,7 +42,11 @@ describe('reduced motion CSS', () => {
   });
 
   it('removes hover lifts on cards', () => {
-    expect(all).toMatch(/\.post-card:hover[\s\S]*?transform:\s*none/);
+    expect(all).toMatch(/\.card:hover[\s\S]*?transform:\s*none/);
+  });
+
+  it('removes hover lifts on related-post cards', () => {
+    expect(all).toMatch(/\.related-card:hover[\s\S]*?transform:\s*none/);
   });
 
   it('keeps the existing drawer-fade override', () => {

@@ -1791,13 +1791,11 @@ button { font-family: inherit; cursor: pointer; }
   html {
     scroll-behavior: auto;
   }
-  .cursor {
+  .brand-cursor {
     animation: none;
   }
-  .post-card:hover {
-    transform: none;
-  }
-  .sidebar-link:hover {
+  .card:hover,
+  .related-card:hover {
     transform: none;
   }
 }
