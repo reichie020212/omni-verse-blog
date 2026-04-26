@@ -98,7 +98,7 @@ We use the programmatic migrator (`drizzle-orm`, a production dep) rather than `
 
 **Build args.** Sensitive values like `AUTH_SECRET` and OAuth secrets are accepted as build args because Next.js's static generation reads them at build time (e.g., for the test creds gate, the metadata, etc.). The image must be considered a "secret" artifact — never pushed to a public registry. Acceptable for self-hosted, single-tenant use.
 
-**Image size target:** ≤ 250 MB.
+**Image size target:** ~800 MB. Larger than a pure standalone bundle (~250 MB) because the Next.js File Tracer doesn't see `start.mjs` and so trims `drizzle-orm` + `libsql` + the native binding from the standalone `node_modules`. We overlay a full production-only `node_modules` from a separate `prod-deps` stage to restore those packages. 800 MB is fine for a single-tenant personal blog on a Mac mini; revisit if image-pull bandwidth becomes an issue (it won't on a LAN).
 
 ---
 
@@ -400,7 +400,7 @@ Sections:
 
 Phase 4b is done when:
 
-- [ ] `docker compose build web` produces a < 250 MB image
+- [ ] `docker compose build web` produces an image (~800 MB; explained in Section 4)
 - [ ] `docker compose up -d` starts both services; `web` reaches `(healthy)` state in <60s
 - [ ] `https://<HOSTNAME>` serves the homepage with valid TLS (CF certificate)
 - [ ] `https://<HOSTNAME>/api/health` returns `{ok:true}`
