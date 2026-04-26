@@ -1,0 +1,49 @@
+# Source-level deps and build artifacts
+node_modules
+.next
+out
+
+# Local dev / test data
+data
+e2e.db
+e2e.db-*
+local.db
+local.db-journal
+playwright-report
+test-results
+.playwright
+public/og
+public/search-index.json
+src/covers/manifest.ts
+.lighthouse-*.json
+
+# Local env files
+.env
+.env.local
+.env.*.local
+.env.production
+
+# IDE / OS
+.DS_Store
+.vscode
+.idea
+
+# VCS
+.git
+.gitignore
+
+# Docs (not needed in image)
+docs
+README.md
+CONTRIBUTING.md
+MIGRATION.md
+DEPLOY.md
+
+# Tests / CI (not needed in runtime image)
+e2e
+playwright.config.ts
+.github
+**/*.test.ts
+**/*.test.tsx
+src/test
+vitest.config.ts
