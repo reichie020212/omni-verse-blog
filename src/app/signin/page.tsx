@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { signIn } from '@/lib/auth';
 
 export default async function SignInPage({
@@ -37,7 +38,7 @@ export default async function SignInPage({
           </button>
         </form>
         <p className="signin-back">
-          <a href="/">← Back home</a>
+          <Link href="/">← Back home</Link>
         </p>
       </div>
     </main>
