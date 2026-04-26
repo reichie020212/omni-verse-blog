@@ -10,3 +10,4 @@ tsconfig.tsbuildinfo
 *.tsbuildinfo
 local.db
 local.db-journal
+public/og/
