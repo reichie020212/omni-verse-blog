@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono, Source_Serif_4 } from 'next/font/google';
 import { SearchProvider } from '@/components/SearchProvider';
 import { Topbar } from '@/components/Topbar';
+import { ReadingProgress } from '@/components/ReadingProgress';
 import '@/styles/globals.css';
 
 const inter = Inter({
@@ -53,6 +54,7 @@ export default function RootLayout({
       </head>
       <body>
         <SearchProvider>
+          <ReadingProgress />
           <a href="#main" className="skip-link">
             Skip to content
           </a>
