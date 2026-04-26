@@ -31,7 +31,13 @@ export const metadata: Metadata = {
     'A blog about tech, programming, celestial bodies, family, and whatever else won’t leave my head.',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+  drawer,
+}: {
+  children: React.ReactNode;
+  drawer: React.ReactNode;
+}) {
   return (
     <html
       lang="en"
@@ -54,6 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main id="main" className="main-content">
             {children}
           </main>
+          {drawer}
         </SearchProvider>
       </body>
     </html>
