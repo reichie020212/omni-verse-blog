@@ -20,7 +20,6 @@ export const envSchema = z.object({
     .regex(/^[a-zA-Z0-9_]{3,32}$/, 'ADMIN_USERNAME must be 3–32 chars [a-zA-Z0-9_]')
     .optional(),
   ADMIN_PASSWORD: z.string().min(8, 'ADMIN_PASSWORD must be ≥8 chars').optional(),
-  POSTS_SOURCE: z.enum(['fs', 'db']).default('fs'),
 });
 
 export type Env = z.infer<typeof envSchema>;

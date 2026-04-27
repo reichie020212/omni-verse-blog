@@ -5,9 +5,8 @@ import { cache } from 'react';
 import { z } from 'zod';
 import { desc, eq } from 'drizzle-orm';
 import { CATEGORY_IDS } from './categories';
-import type { DB } from './db';
+import { db, type DB } from './db';
 import { posts as postsTable } from './schema';
-import { env } from './env';
 
 export const PostFrontmatterSchema = z.object({
   id: z.string().regex(/^0x[0-9a-f]{3}$/, 'id must be 0x followed by 3 hex digits'),
@@ -74,8 +73,6 @@ export async function loadPostsFromDir(
     .sort((a, b) => b.date.localeCompare(a.date));
 }
 
-const POSTS_DIR = path.join(process.cwd(), 'content', 'posts');
-
 function rowToPost(row: typeof postsTable.$inferSelect): Post {
   return {
     id: row.id,
@@ -114,15 +111,9 @@ export async function getPostBySlugImpl(
   return rowToPost(row);
 }
 
-async function loadAllPosts(): Promise<Post[]> {
-  if (env.POSTS_SOURCE === 'db') {
-    const { db } = await import('./db');
-    return getAllPostsImpl(db);
-  }
-  return loadPostsFromDir(POSTS_DIR);
-}
-
-export const getAllPosts = cache(loadAllPosts);
+export const getAllPosts = cache(async (): Promise<Post[]> => {
+  return getAllPostsImpl(db);
+});
 
 export const getPostBySlug = cache(async (slug: string): Promise<Post | undefined> => {
   const all = await getAllPosts();
