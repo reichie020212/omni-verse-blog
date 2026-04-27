@@ -47,7 +47,12 @@ export async function SearchResults({
             <li key={post.slug} className="search-result">
               <Link href={`/posts/${post.slug}`} className="search-result-link">
                 <div className="search-result-cover">
-                  <Cover cover={post.cover} slug={post.slug} size="small" />
+                  <Cover
+                    cover={post.cover}
+                    slug={post.slug}
+                    size="small"
+                    hasCoverImage={post.hasCoverImage}
+                  />
                 </div>
                 <div className="search-result-body">
                   <div className="search-result-meta">

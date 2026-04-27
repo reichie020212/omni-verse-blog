@@ -1,8 +1,11 @@
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import type { DB } from './db';
-import { posts as postsTable } from './schema';
+import { posts as postsTable, postCovers } from './schema';
 import { CATEGORY_IDS } from './categories';
+
+const COVER_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
+const COVER_IMAGE_ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const;
 
 export const PostInputSchema = z.object({
   slug: z
@@ -93,4 +96,45 @@ export async function upsertPostImpl(
 
 export async function deletePostImpl(db: DB, slug: string): Promise<void> {
   await db.delete(postsTable).where(eq(postsTable.slug, slug));
+}
+
+export async function setCoverImageImpl(
+  db: DB,
+  slug: string,
+  bytes: Buffer,
+  contentType: string,
+): Promise<void> {
+  if (bytes.byteLength === 0) {
+    throw new Error('cover image is empty');
+  }
+  if (bytes.byteLength > COVER_IMAGE_MAX_BYTES) {
+    throw new Error(
+      `cover image exceeds ${COVER_IMAGE_MAX_BYTES / 1024 / 1024} MB limit`,
+    );
+  }
+  if (!(COVER_IMAGE_ALLOWED_TYPES as readonly string[]).includes(contentType)) {
+    throw new Error(
+      `cover image must be one of: ${COVER_IMAGE_ALLOWED_TYPES.join(', ')}`,
+    );
+  }
+  const updatedAt = new Date();
+  await db
+    .insert(postCovers)
+    .values({ postSlug: slug, image: bytes, contentType, updatedAt })
+    .onConflictDoUpdate({
+      target: postCovers.postSlug,
+      set: { image: bytes, contentType, updatedAt },
+    });
+  await db
+    .update(postsTable)
+    .set({ hasCoverImage: true })
+    .where(eq(postsTable.slug, slug));
+}
+
+export async function clearCoverImageImpl(db: DB, slug: string): Promise<void> {
+  await db.delete(postCovers).where(eq(postCovers.postSlug, slug));
+  await db
+    .update(postsTable)
+    .set({ hasCoverImage: false })
+    .where(eq(postsTable.slug, slug));
 }

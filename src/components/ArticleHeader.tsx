@@ -27,7 +27,12 @@ export async function ArticleHeader({ post }: { post: Post }) {
       <h1 className="article-title">{post.title}</h1>
       <p className="article-excerpt">{post.excerpt}</p>
       <div className="article-cover">
-        <Cover cover={post.cover} slug={post.slug} size="hero" />
+        <Cover
+          cover={post.cover}
+          slug={post.slug}
+          size="hero"
+          hasCoverImage={post.hasCoverImage}
+        />
       </div>
     </header>
   );

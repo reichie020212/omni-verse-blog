@@ -4,7 +4,12 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { auth } from './auth';
 import { db } from './db';
-import { upsertPostImpl, deletePostImpl } from './posts-admin';
+import {
+  upsertPostImpl,
+  deletePostImpl,
+  setCoverImageImpl,
+  clearCoverImageImpl,
+} from './posts-admin';
 import { regenerateSearchIndex } from './search-index';
 
 async function ensureAdmin(): Promise<{ userId: string }> {
@@ -47,6 +52,16 @@ export async function upsertPostAction(formData: FormData): Promise<void> {
   const { userId } = await ensureAdmin();
   const raw = parseFormData(formData);
   const { slug } = await upsertPostImpl(db, userId, raw);
+
+  const removeCoverImage = formData.get('removeCoverImage') === 'on';
+  const coverImage = formData.get('coverImage');
+  if (coverImage instanceof File && coverImage.size > 0) {
+    const buf = Buffer.from(await coverImage.arrayBuffer());
+    await setCoverImageImpl(db, slug, buf, coverImage.type);
+  } else if (removeCoverImage) {
+    await clearCoverImageImpl(db, slug);
+  }
+
   await regenerateSearchIndex(db);
   revalidateForPost(
     slug,

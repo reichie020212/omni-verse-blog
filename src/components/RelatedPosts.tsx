@@ -16,7 +16,12 @@ export async function RelatedPosts({ post }: { post: Post }) {
           <li key={r.slug} className="related-item">
             <Link href={`/posts/${r.slug}`} className="related-link">
               <div className="related-cover">
-                <Cover cover={r.cover} slug={r.slug} size="small" />
+                <Cover
+                  cover={r.cover}
+                  slug={r.slug}
+                  size="small"
+                  hasCoverImage={r.hasCoverImage}
+                />
               </div>
               <div className="related-meta">
                 <span className="related-date">{fmtDate(r.date)}</span>

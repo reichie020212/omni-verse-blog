@@ -16,6 +16,7 @@ function p(over: Partial<Post>): Post {
     cover: 'web',
     featured: false,
     draft: false,
+    hasCoverImage: false,
     body: '',
     ...over,
   };

@@ -15,7 +15,12 @@ export function Card({ post }: { post: Post }) {
   return (
     <article className={`card card-${post.size}`}>
       <div className="card-cover">
-        <Cover cover={post.cover} slug={post.slug} size={post.size} />
+        <Cover
+          cover={post.cover}
+          slug={post.slug}
+          size={post.size}
+          hasCoverImage={post.hasCoverImage}
+        />
       </div>
       <div className="card-body">
         <div className="card-meta">

@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, primaryKey, index } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, blob, primaryKey, index } from 'drizzle-orm/sqlite-core';
 import { relations, sql } from 'drizzle-orm';
 
 export const users = sqliteTable('user', {
@@ -115,6 +115,7 @@ export const posts = sqliteTable(
     readTime: integer('read_time').notNull(),
     size: text('size', { enum: ['hero', 'wide', 'medium', 'small'] }).notNull(),
     cover: text('cover').notNull(),
+    hasCoverImage: integer('has_cover_image', { mode: 'boolean' }).notNull().default(false),
     featured: integer('featured', { mode: 'boolean' }).notNull().default(false),
     draft: integer('draft', { mode: 'boolean' }).notNull().default(false),
     authorId: text('author_id')
@@ -135,11 +136,25 @@ export const usersRelations = relations(users, ({ many }) => ({
   posts: many(posts),
 }));
 
+export const postCovers = sqliteTable('post_covers', {
+  postSlug: text('post_slug')
+    .primaryKey()
+    .references(() => posts.slug, { onDelete: 'cascade' }),
+  image: blob('image', { mode: 'buffer' }).notNull(),
+  contentType: text('content_type').notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
+});
+
 export const postsRelations = relations(posts, ({ one, many }) => ({
   author: one(users, { fields: [posts.authorId], references: [users.id] }),
   likes: many(likes),
   bookmarks: many(bookmarks),
   comments: many(comments),
+  cover: one(postCovers, { fields: [posts.slug], references: [postCovers.postSlug] }),
+}));
+
+export const postCoversRelations = relations(postCovers, ({ one }) => ({
+  post: one(posts, { fields: [postCovers.postSlug], references: [posts.slug] }),
 }));
 
 export const likesRelations = relations(likes, ({ one }) => ({

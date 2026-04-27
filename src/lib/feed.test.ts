@@ -15,6 +15,7 @@ const post = (over: Partial<Post> = {}): Post => ({
   cover: 'jovian',
   featured: false,
   draft: false,
+  hasCoverImage: false,
   body: 'body',
   ...over,
 });

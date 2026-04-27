@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { upsertPostAction } from '@/lib/posts-admin-actions';
 import { CATEGORY_IDS } from '@/lib/categories';
+import { COVER_GENERATOR_NAMES } from '@/covers';
 import type { Post } from '@/lib/posts';
 
 const SIZES = ['hero', 'wide', 'medium', 'small'] as const;
@@ -19,6 +20,7 @@ export function AdminPostForm({ initial }: { initial?: Post }) {
   return (
     <form
       action={upsertPostAction}
+      encType="multipart/form-data"
       style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '720px' }}
     >
       <label style={FIELD}>
@@ -99,10 +101,45 @@ export function AdminPostForm({ initial }: { initial?: Post }) {
           </select>
         </label>
         <label style={{ ...FIELD, flex: 1 }}>
-          <span>Cover (SVG generator name or JPG path)</span>
-          <input type="text" name="cover" defaultValue={initial?.cover ?? ''} required style={INPUT} />
+          <span>Cover fallback (deterministic SVG generator)</span>
+          <select
+            name="cover"
+            defaultValue={initial?.cover ?? COVER_GENERATOR_NAMES[0]}
+            required
+            style={INPUT}
+          >
+            {COVER_GENERATOR_NAMES.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
         </label>
       </div>
+      <fieldset style={{ ...FIELD, border: '1px solid #333', borderRadius: '4px', padding: '0.75rem' }}>
+        <legend style={{ padding: '0 0.5rem' }}>Cover image (optional)</legend>
+        <p style={{ margin: 0, fontSize: '0.85rem', opacity: 0.7 }}>
+          Upload a JPG, PNG, or WebP (≤ 5 MB). When set, the image overrides the generator above.
+          {initial?.hasCoverImage && (
+            <>
+              {' '}
+              <strong>Currently using an uploaded image.</strong>
+            </>
+          )}
+        </p>
+        <input
+          type="file"
+          name="coverImage"
+          accept="image/jpeg,image/png,image/webp"
+          style={{ marginTop: '0.5rem' }}
+        />
+        {initial?.hasCoverImage && (
+          <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
+            <input type="checkbox" name="removeCoverImage" />
+            <span>Remove the uploaded image (revert to the generator)</span>
+          </label>
+        )}
+      </fieldset>
       <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
         <input type="checkbox" name="featured" defaultChecked={initial?.featured ?? false} />
         <span>Featured</span>

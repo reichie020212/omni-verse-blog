@@ -7,13 +7,13 @@ const POSTS: Post[] = [
     id: '0x002', title: 'B', slug: 'b', excerpt: 'eb',
     category: 'tech', tags: ['x'], date: '2026-04-02',
     readTime: 3, size: 'small', cover: 'web',
-    featured: false, draft: false, body: 'BODY-B',
+    featured: false, draft: false, hasCoverImage: false, body: 'BODY-B',
   },
   {
     id: '0x001', title: 'A', slug: 'a', excerpt: 'ea',
     category: 'tech', tags: ['x', 'y'], date: '2026-04-01',
     readTime: 3, size: 'small', cover: 'web',
-    featured: false, draft: false, body: 'BODY-A',
+    featured: false, draft: false, hasCoverImage: false, body: 'BODY-A',
   },
 ];
 

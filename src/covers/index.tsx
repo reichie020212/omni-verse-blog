@@ -42,15 +42,33 @@ const GENERATORS: Record<string, React.ComponentType<{ seed: string; size: Size 
   paint: PaintCover,
 };
 
+export const COVER_GENERATOR_NAMES = Object.keys(GENERATORS).sort() as readonly string[];
+
 export function Cover({
   cover,
   slug,
   size,
+  hasCoverImage,
 }: {
   cover: string;
   slug: string;
   size: Size;
+  hasCoverImage?: boolean;
 }) {
+  if (hasCoverImage) {
+    const dim = SIZE_DIMENSIONS[size];
+    return (
+      <Image
+        src={`/api/posts/${slug}/cover`}
+        alt=""
+        width={dim.width}
+        height={dim.height}
+        className="cover-image"
+        priority={size === 'hero'}
+        unoptimized
+      />
+    );
+  }
   if (JPG_COVERS.has(slug)) {
     const dim = SIZE_DIMENSIONS[size];
     return (

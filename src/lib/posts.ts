@@ -25,6 +25,7 @@ export const PostFrontmatterSchema = z.object({
   cover: z.string().min(1),
   featured: z.boolean().default(false),
   draft: z.boolean().default(false),
+  hasCoverImage: z.boolean().default(false),
 });
 
 export type PostFrontmatter = z.infer<typeof PostFrontmatterSchema>;
@@ -88,6 +89,7 @@ function rowToPost(row: typeof postsTable.$inferSelect): Post {
     cover: row.cover,
     featured: row.featured,
     draft: row.draft,
+    hasCoverImage: row.hasCoverImage,
   };
 }
 
