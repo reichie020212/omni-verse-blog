@@ -18,7 +18,7 @@ export async function generateMetadata({
   const { id } = await params;
   const cat = categoryById(id);
   return cat
-    ? { title: `${cat.label} — Omni-Verse Blog`, description: `Posts in ${cat.label}` }
+    ? { title: cat.label, description: `Posts in ${cat.label}` }
     : {};
 }
 

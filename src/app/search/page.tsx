@@ -4,7 +4,7 @@ import { searchOnServer } from '@/lib/search-server';
 import { FilterChips, type ActiveFilter } from '@/components/FilterChips';
 
 export const metadata = {
-  title: 'Search — Omni-Verse Blog',
+  title: 'Search',
   description: 'Search posts on Omni-Verse Blog',
 };
 

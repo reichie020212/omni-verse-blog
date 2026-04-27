@@ -6,7 +6,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { CardGrid } from '@/components/CardGrid';
 
 export const metadata = {
-  title: 'Bookmarks — Omni-Verse Blog',
+  title: 'Bookmarks',
 };
 
 export default async function BookmarksPage() {

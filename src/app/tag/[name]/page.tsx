@@ -18,7 +18,7 @@ export async function generateMetadata({
   params: Promise<{ name: string }>;
 }) {
   const { name } = await params;
-  return { title: `#${name} — Omni-Verse Blog`, description: `Posts tagged #${name}` };
+  return { title: `#${name}`, description: `Posts tagged #${name}` };
 }
 
 export default async function TagPage({
