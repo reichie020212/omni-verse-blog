@@ -46,8 +46,8 @@ This phase touches the content pipeline, not the deployment story. The Phase 4b 
 | 1 | `slug` is the `posts` PK | `id` autoincrement + unique slug — would force backfill on `likes`/`bookmarks`/`comments` |
 | 2 | `tags` as JSON text column | `tags` table + `posts_tags` join — overkill for free-text behavior, no v1 use case |
 | 3 | `category` as TEXT against the code enum | normalize into a `categories` table — would require in-app management UI |
-| 4 | Body stored as raw MDX TEXT, rendered via `next-mdx-remote/rsc` at request time | pre-render on save into HTML — duplicates source-of-truth, complicates editing |
-| 5 | `draft boolean` + `publishedAt timestamp nullable` | single `status` enum — boolean + timestamp is two cheap fields and reads cleanly |
+| 4 | Body stored as raw MDX TEXT in column `body`, rendered via `next-mdx-remote/rsc` at request time | pre-render on save into HTML — duplicates source-of-truth, complicates editing |
+| 5 | `draft boolean` + `date` (ISO `YYYY-MM-DD` text) for sort | timestamp `publishedAt` — `date` is the actual field used by every callsite; switching would touch sort, RSS, sitemap, search-index, page meta |
 | 6 | `cover` as TEXT pointer (SVG generator name OR JPG path) using existing `manifest.ts` | DB-stored cover blobs — covers are React components, not data |
 | 7 | `authorId` FK to `users.id`, `notNull` | omit field — schema churn later, free to add now |
 | 8 | Migration script reuses `src/lib/posts.ts` parser | new dep on `gray-matter` — already covered by existing parser |
@@ -65,26 +65,29 @@ This phase touches the content pipeline, not the deployment story. The Phase 4b 
 
 All additions to `src/lib/schema.ts`. Existing tables unchanged except for the new `role` column on `users` and the new FK on `likes`/`bookmarks`/`comments`.
 
+> **Schema-naming correction (2026-04-28, mid-Phase-1):** the original draft used `summary`/`publishedAt`/`readingMinutes`/`coverAlt` based on a stale CLAUDE.md description. The actual `Post` shape in `src/lib/posts.ts` uses `excerpt`/`date`/`readTime` and also carries `id` (hex `0x4f2`-style) and `size` (`hero`/`wide`/`medium`/`small`). The schema below matches the actual shape 1:1 to keep Phase 2's "Post shape unchanged" promise honest and avoid touching ~9 RSC callsites for cosmetic renames.
+
 ```ts
 // New
 export const posts = sqliteTable("posts", {
   slug: text("slug").primaryKey(),
+  id: text("id").notNull().unique(),                        // hex '0x4f2'-style display id
   title: text("title").notNull(),
-  summary: text("summary").notNull(),
-  content: text("content").notNull(),                       // raw MDX body
+  excerpt: text("excerpt").notNull(),
+  body: text("body").notNull(),                             // raw MDX
   category: text("category").notNull(),                     // matches CATEGORIES enum
   tags: text("tags", { mode: "json" }).$type<string[]>().notNull().default([]),
-  cover: text("cover"),                                     // generator name or JPG path; null = fallback
-  coverAlt: text("cover_alt"),
-  readingMinutes: integer("reading_minutes").notNull(),
+  date: text("date").notNull(),                             // 'YYYY-MM-DD' (ISO date string)
+  readTime: integer("read_time").notNull(),
+  size: text("size", { enum: ["hero", "wide", "medium", "small"] }).notNull(),
+  cover: text("cover").notNull(),                           // generator name or JPG path
   featured: integer("featured", { mode: "boolean" }).notNull().default(false),
-  draft: integer("draft", { mode: "boolean" }).notNull().default(true),
-  publishedAt: integer("published_at", { mode: "timestamp" }),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+  draft: integer("draft", { mode: "boolean" }).notNull().default(false),
   authorId: text("author_id").notNull().references(() => users.id),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
 }, (t) => ({
   draftIdx: index("posts_draft_idx").on(t.draft),
-  publishedAtIdx: index("posts_published_at_idx").on(t.publishedAt),
+  dateIdx: index("posts_date_idx").on(t.date),
   categoryIdx: index("posts_category_idx").on(t.category),
 }));
 

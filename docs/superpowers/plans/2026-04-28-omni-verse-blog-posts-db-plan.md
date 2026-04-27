@@ -27,7 +27,7 @@
 **Steps:**
 - [ ] **Add `role` column to `users` table** in `src/lib/schema.ts`:
   - `role: text("role", { enum: ["admin", "user"] }).notNull().default("user")`.
-- [ ] **Add `posts` table** matching the spec (§3). Include all fields, default values, and indexes (`posts_draft_idx`, `posts_published_at_idx`, `posts_category_idx`).
+- [ ] **Add `posts` table** matching the spec (§3). Schema matches the actual `Post` shape in `src/lib/posts.ts` 1:1 — `id`, `slug`, `title`, `excerpt`, `body`, `category`, `tags`, `date`, `readTime`, `size`, `cover`, `featured`, `draft`, `authorId`, `updatedAt`. Indexes: `posts_draft_idx`, `posts_date_idx`, `posts_category_idx` (plus auto unique index on `id`).
 - [ ] **Add relations** for `posts` (author → users, plus inverse from users.posts) — engagement-table FKs land in Phase 6, so don't add post-side relations to likes/bookmarks/comments yet.
 - [ ] **Generate migration:** `pnpm db:generate`. Inspect the generated SQL — it should `CREATE TABLE posts`, `CREATE INDEX` × 3, and `ALTER TABLE user ADD COLUMN role TEXT NOT NULL DEFAULT 'user'`.
 - [ ] **Apply locally:** `pnpm db:migrate`. Verify with `sqlite3 local.db '.schema posts'`.
