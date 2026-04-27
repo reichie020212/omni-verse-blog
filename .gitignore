@@ -17,6 +17,7 @@ playwright-report/
 test-results/
 .playwright/
 .playwright-mcp/
+.ccb/
 
 # Phase 4b — production deploy state
 .env.production
