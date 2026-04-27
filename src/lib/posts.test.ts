@@ -249,6 +249,31 @@ describe('DB-backed impls', () => {
     expect(miss).toBeUndefined();
   });
 
+  it('round-trips a parsed MDX post through the DB unchanged', async () => {
+    const db = await makeTestDb();
+    const author = await seedUser(db);
+    const post = parsePost('why-the-jovian-moons.mdx', VALID);
+    await db.insert(postsTable).values({
+      slug: post.slug,
+      id: post.id,
+      title: post.title,
+      excerpt: post.excerpt,
+      body: post.body,
+      category: post.category,
+      tags: post.tags,
+      date: post.date,
+      readTime: post.readTime,
+      size: post.size,
+      cover: post.cover,
+      featured: post.featured,
+      draft: post.draft,
+      authorId: author.id,
+    });
+
+    const roundTripped = await getPostBySlugImpl(db, post.slug, { includeDrafts: true });
+    expect(roundTripped).toEqual(post);
+  });
+
   it('getPostBySlugImpl hides drafts in production-mode lookups', async () => {
     const db = await makeTestDb();
     const author = await seedUser(db);
