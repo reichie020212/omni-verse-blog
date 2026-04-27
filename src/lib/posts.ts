@@ -3,7 +3,11 @@ import path from 'node:path';
 import matter from 'gray-matter';
 import { cache } from 'react';
 import { z } from 'zod';
+import { desc, eq } from 'drizzle-orm';
 import { CATEGORY_IDS } from './categories';
+import type { DB } from './db';
+import { posts as postsTable } from './schema';
+import { env } from './env';
 
 export const PostFrontmatterSchema = z.object({
   id: z.string().regex(/^0x[0-9a-f]{3}$/, 'id must be 0x followed by 3 hex digits'),
@@ -72,9 +76,53 @@ export async function loadPostsFromDir(
 
 const POSTS_DIR = path.join(process.cwd(), 'content', 'posts');
 
-export const getAllPosts = cache(async (): Promise<Post[]> => {
+function rowToPost(row: typeof postsTable.$inferSelect): Post {
+  return {
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    excerpt: row.excerpt,
+    body: row.body,
+    category: row.category,
+    tags: row.tags,
+    date: row.date,
+    readTime: row.readTime,
+    size: row.size,
+    cover: row.cover,
+    featured: row.featured,
+    draft: row.draft,
+  };
+}
+
+export async function getAllPostsImpl(
+  db: DB,
+  opts: LoadOptions = { includeDrafts: process.env.NODE_ENV !== 'production' },
+): Promise<Post[]> {
+  const rows = await db.select().from(postsTable).orderBy(desc(postsTable.date));
+  return rows.filter((r) => (opts.includeDrafts ? true : !r.draft)).map(rowToPost);
+}
+
+export async function getPostBySlugImpl(
+  db: DB,
+  slug: string,
+  opts: LoadOptions = { includeDrafts: process.env.NODE_ENV !== 'production' },
+): Promise<Post | undefined> {
+  const rows = await db.select().from(postsTable).where(eq(postsTable.slug, slug));
+  const row = rows[0];
+  if (!row) return undefined;
+  if (!opts.includeDrafts && row.draft) return undefined;
+  return rowToPost(row);
+}
+
+async function loadAllPosts(): Promise<Post[]> {
+  if (env.POSTS_SOURCE === 'db') {
+    const { db } = await import('./db');
+    return getAllPostsImpl(db);
+  }
   return loadPostsFromDir(POSTS_DIR);
-});
+}
+
+export const getAllPosts = cache(loadAllPosts);
 
 export const getPostBySlug = cache(async (slug: string): Promise<Post | undefined> => {
   const all = await getAllPosts();

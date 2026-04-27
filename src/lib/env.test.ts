@@ -56,6 +56,7 @@ describe('envSchema', () => {
       SITE_URL: 'http://localhost:3000',
       E2E_TEST: '1',
       NODE_ENV: 'production',
+      POSTS_SOURCE: 'fs',
     };
     expect(() => assertNotE2EInProduction(parsed)).toThrow(
       /E2E_TEST=1 is not allowed in production/,
@@ -69,6 +70,7 @@ describe('envSchema', () => {
       SITE_URL: 'http://localhost:3000',
       E2E_TEST: '1',
       NODE_ENV: 'development',
+      POSTS_SOURCE: 'fs',
     };
     expect(() => assertNotE2EInProduction(parsed)).not.toThrow();
   });
@@ -80,6 +82,7 @@ describe('envSchema', () => {
       SITE_URL: 'http://localhost:3000',
       E2E_TEST: '0',
       NODE_ENV: 'production',
+      POSTS_SOURCE: 'fs',
     };
     expect(() => assertNotE2EInProduction(parsed)).not.toThrow();
   });

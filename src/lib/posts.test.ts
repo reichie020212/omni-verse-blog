@@ -7,7 +7,12 @@ import {
   PostFrontmatterSchema,
   assertUniqueIdsAndSlugs,
   loadPostsFromDir,
+  getAllPostsImpl,
+  getPostBySlugImpl,
+  type Post,
 } from './posts';
+import { makeTestDb, seedUser } from './test-db';
+import { posts as postsTable } from './schema';
 
 const VALID = `---
 id: '0x4f2'
@@ -174,6 +179,86 @@ describe('sort and draft handling', () => {
   it('strips drafts when includeDrafts is false', async () => {
     const posts = await loadPostsFromDir(dir, { includeDrafts: false });
     expect(posts.some((p) => p.draft)).toBe(false);
+  });
+});
+
+describe('DB-backed impls', () => {
+  function rowFor(slug: string, overrides: Partial<typeof postsTable.$inferInsert> = {}) {
+    return {
+      slug,
+      id: `0x${slug.charCodeAt(0).toString(16).padStart(3, '0')}`,
+      title: `Title ${slug}`,
+      excerpt: `Excerpt ${slug}`,
+      body: `Body ${slug}`,
+      category: 'celestial',
+      tags: ['x'],
+      date: '2026-04-22',
+      readTime: 7,
+      size: 'medium' as const,
+      cover: 'jovian',
+      featured: false,
+      draft: false,
+      authorId: '',
+      ...overrides,
+    };
+  }
+
+  it('getAllPostsImpl returns posts newest-first and strips drafts when asked', async () => {
+    const db = await makeTestDb();
+    const author = await seedUser(db);
+    await db.insert(postsTable).values([
+      rowFor('a', { date: '2026-01-01', authorId: author.id }),
+      rowFor('b', { date: '2026-04-01', authorId: author.id }),
+      rowFor('c', { date: '2025-12-01', draft: true, authorId: author.id }),
+    ]);
+
+    const all = await getAllPostsImpl(db, { includeDrafts: true });
+    expect(all.map((p) => p.slug)).toEqual(['b', 'a', 'c']);
+
+    const published = await getAllPostsImpl(db, { includeDrafts: false });
+    expect(published.map((p) => p.slug)).toEqual(['b', 'a']);
+  });
+
+  it('getAllPostsImpl maps tags JSON, booleans, and the size enum to the Post shape', async () => {
+    const db = await makeTestDb();
+    const author = await seedUser(db);
+    await db.insert(postsTable).values([
+      rowFor('mapping', { tags: ['one', 'two'], featured: true, size: 'hero', authorId: author.id }),
+    ]);
+
+    const [post] = await getAllPostsImpl(db);
+    const expected: Pick<Post, 'tags' | 'featured' | 'size'> = {
+      tags: ['one', 'two'],
+      featured: true,
+      size: 'hero',
+    };
+    expect(post.tags).toEqual(expected.tags);
+    expect(post.featured).toBe(expected.featured);
+    expect(post.size).toBe(expected.size);
+  });
+
+  it('getPostBySlugImpl returns a hit and undefined for misses', async () => {
+    const db = await makeTestDb();
+    const author = await seedUser(db);
+    await db.insert(postsTable).values([rowFor('hit', { authorId: author.id })]);
+
+    const hit = await getPostBySlugImpl(db, 'hit');
+    expect(hit?.slug).toBe('hit');
+
+    const miss = await getPostBySlugImpl(db, 'nope');
+    expect(miss).toBeUndefined();
+  });
+
+  it('getPostBySlugImpl hides drafts in production-mode lookups', async () => {
+    const db = await makeTestDb();
+    const author = await seedUser(db);
+    await db.insert(postsTable).values([rowFor('wip', { draft: true, authorId: author.id })]);
+
+    const withDrafts = await getPostBySlugImpl(db, 'wip', { includeDrafts: true });
+    expect(withDrafts?.slug).toBe('wip');
+
+    const withoutDrafts = await getPostBySlugImpl(db, 'wip', { includeDrafts: false });
+    expect(withoutDrafts).toBeUndefined();
   });
 });
 
