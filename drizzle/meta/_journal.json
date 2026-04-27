@@ -15,6 +15,13 @@
       "when": 1777300954843,
       "tag": "0001_hard_robin_chapel",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1777306443328,
+      "tag": "0002_safe_hellfire_club",
+      "breakpoints": true
     }
   ]
 }

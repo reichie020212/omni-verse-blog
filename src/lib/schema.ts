@@ -9,7 +9,7 @@ export const users = sqliteTable('user', {
   image: text('image'),
   username: text('username').unique(),
   passwordHash: text('password_hash'),
-  role: text('role').notNull().default('user'),
+  role: text('role', { enum: ['admin', 'user'] }).notNull().default('user'),
 });
 
 export const accounts = sqliteTable(
@@ -94,6 +94,44 @@ export const comments = sqliteTable(
   },
   (t) => ({ bySlug: index('comments_by_slug_idx').on(t.postSlug, t.createdAt) }),
 );
+
+export const posts = sqliteTable(
+  'posts',
+  {
+    slug: text('slug').primaryKey(),
+    id: text('id').notNull().unique(),
+    title: text('title').notNull(),
+    excerpt: text('excerpt').notNull(),
+    body: text('body').notNull(),
+    category: text('category').notNull(),
+    tags: text('tags', { mode: 'json' }).$type<string[]>().notNull().default([]),
+    date: text('date').notNull(),
+    readTime: integer('read_time').notNull(),
+    size: text('size', { enum: ['hero', 'wide', 'medium', 'small'] }).notNull(),
+    cover: text('cover').notNull(),
+    featured: integer('featured', { mode: 'boolean' }).notNull().default(false),
+    draft: integer('draft', { mode: 'boolean' }).notNull().default(false),
+    authorId: text('author_id')
+      .notNull()
+      .references(() => users.id),
+    updatedAt: integer('updated_at', { mode: 'timestamp_ms' })
+      .notNull()
+      .default(sql`(unixepoch() * 1000)`),
+  },
+  (t) => ({
+    draftIdx: index('posts_draft_idx').on(t.draft),
+    dateIdx: index('posts_date_idx').on(t.date),
+    categoryIdx: index('posts_category_idx').on(t.category),
+  }),
+);
+
+export const usersRelations = relations(users, ({ many }) => ({
+  posts: many(posts),
+}));
+
+export const postsRelations = relations(posts, ({ one }) => ({
+  author: one(users, { fields: [posts.authorId], references: [users.id] }),
+}));
 
 export const commentsRelations = relations(comments, ({ one }) => ({
   user: one(users, { fields: [comments.userId], references: [users.id] }),
