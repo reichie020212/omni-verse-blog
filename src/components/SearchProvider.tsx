@@ -46,7 +46,7 @@ export function SearchProvider({
   const ensureIndex = useCallback(async () => {
     if (index) return;
     try {
-      const res = await fetch('/search-index.json', { cache: 'force-cache' });
+      const res = await fetch('/api/search-index.json', { cache: 'force-cache' });
       const data = (await res.json()) as SearchIndexEntry[];
       setIndex(data);
       fuseRef.current = new Fuse(data, FUSE_OPTIONS);

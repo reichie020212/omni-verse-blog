@@ -1,7 +1,6 @@
 import { readFile } from 'node:fs/promises';
-import path from 'node:path';
 import Fuse, { type IFuseOptions } from 'fuse.js';
-import type { SearchIndexEntry } from './search-index';
+import { SEARCH_INDEX_PATH, type SearchIndexEntry } from './search-index';
 
 export type ServerMatch = {
   entry: SearchIndexEntry;
@@ -24,8 +23,7 @@ let cached: { fuse: Fuse<SearchIndexEntry>; entries: SearchIndexEntry[] } | null
 
 async function load(): Promise<NonNullable<typeof cached>> {
   if (cached) return cached;
-  const file = path.join(process.cwd(), 'public', 'search-index.json');
-  const json = await readFile(file, 'utf8');
+  const json = await readFile(SEARCH_INDEX_PATH, 'utf8');
   const entries = JSON.parse(json) as SearchIndexEntry[];
   cached = { fuse: new Fuse(entries, FUSE_OPTIONS), entries };
   return cached;

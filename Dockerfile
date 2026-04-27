@@ -46,10 +46,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Run the prebuild scripts then `next build`. Skip `db:migrate` (the production
-# DB lives on the host bind mount and is migrated at container start).
+# DB lives on the host bind mount and is migrated at container start). OG cards
+# and the search index are now generated at runtime — no build-time step needed.
 RUN pnpm exec tsx scripts/build-cover-manifest.ts \
- && pnpm exec tsx scripts/build-og-cards.ts \
- && pnpm exec tsx scripts/build-search-index.ts \
  && pnpm exec next build
 
 # ---------- runner ----------

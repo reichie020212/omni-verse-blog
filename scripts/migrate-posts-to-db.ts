@@ -5,6 +5,7 @@ import { bootstrapAdmin } from '../src/lib/bootstrap-admin';
 import { db } from '../src/lib/db';
 import { env } from '../src/lib/env';
 import { posts as postsTable, users } from '../src/lib/schema';
+import { regenerateSearchIndex } from '../src/lib/search-index';
 
 type PostRow = typeof postsTable.$inferSelect;
 
@@ -88,6 +89,9 @@ async function main(): Promise<void> {
   console.log(
     `Migrated ${posts.length} post(s): ${inserted} inserted, ${updated} updated, ${skipped} unchanged.`,
   );
+
+  const indexCount = await regenerateSearchIndex(db);
+  console.log(`Regenerated data/search-index.json (${indexCount} entries).`);
 }
 
 main().catch((err) => {

@@ -30,13 +30,13 @@ export async function generateMetadata({
       publishedTime: post.date,
       authors: ['Red'],
       tags: post.tags,
-      images: [`/og/${post.slug}.png`],
+      images: [`/posts/${post.slug}/og`],
     },
     twitter: {
       card: 'summary_large_image' as const,
       title: post.title,
       description: post.excerpt,
-      images: [`/og/${post.slug}.png`],
+      images: [`/posts/${post.slug}/og`],
     },
   };
 }
