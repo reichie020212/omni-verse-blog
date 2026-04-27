@@ -3,7 +3,7 @@ import type { Post } from '@/lib/posts';
 
 export function CardGrid({ posts }: { posts: Post[] }) {
   return (
-    <div className="card-grid">
+    <div className="grid">
       {posts.map((p) => (
         <Card key={p.slug} post={p} />
       ))}

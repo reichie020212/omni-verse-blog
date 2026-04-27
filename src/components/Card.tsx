@@ -19,10 +19,12 @@ export function Card({ post }: { post: Post }) {
       </div>
       <div className="card-body">
         <div className="card-meta">
+          <span className="card-cat">{post.category.toLowerCase()}</span>
+          <span className="card-meta-sep">•</span>
+          <span>{fmtDate(post.date)}</span>
+          <span className="card-meta-sep">•</span>
+          <span>{post.readTime} min</span>
           <span className="card-id">{post.id}</span>
-          <span className="card-category">{post.category}</span>
-          <span className="card-date">{fmtDate(post.date)}</span>
-          <span className="card-readtime">{post.readTime} min</span>
         </div>
         <H className="card-title">
           <Link href={`/posts/${post.slug}`} className="card-title-link">
@@ -31,15 +33,21 @@ export function Card({ post }: { post: Post }) {
         </H>
         <p className="card-excerpt">{post.excerpt}</p>
         {post.tags.length > 0 && (
-          <ul className="card-tags">
+          <div
+            className="card-tags"
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '6px',
+              marginTop: '8px',
+            }}
+          >
             {post.tags.map((t) => (
-              <li key={t}>
-                <Link href={`/tag/${t}`} className="tag-chip">
-                  #{t}
-                </Link>
-              </li>
+              <Link key={t} href={`/tag/${t}`} className="tag-pill">
+                {t}
+              </Link>
             ))}
-          </ul>
+          </div>
         )}
       </div>
     </article>
