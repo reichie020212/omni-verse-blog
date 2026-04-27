@@ -15,6 +15,11 @@ export const envSchema = z.object({
   SITE_URL: z.string().url().default('http://localhost:3000'),
   E2E_TEST: z.enum(['0', '1']).default('0'),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  ADMIN_USERNAME: z
+    .string()
+    .regex(/^[a-zA-Z0-9_]{3,32}$/, 'ADMIN_USERNAME must be 3–32 chars [a-zA-Z0-9_]')
+    .optional(),
+  ADMIN_PASSWORD: z.string().min(8, 'ADMIN_PASSWORD must be ≥8 chars').optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

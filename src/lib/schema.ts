@@ -7,6 +7,9 @@ export const users = sqliteTable('user', {
   email: text('email').unique(),
   emailVerified: integer('emailVerified', { mode: 'timestamp_ms' }),
   image: text('image'),
+  username: text('username').unique(),
+  passwordHash: text('password_hash'),
+  role: text('role').notNull().default('user'),
 });
 
 export const accounts = sqliteTable(

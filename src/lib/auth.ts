@@ -7,14 +7,36 @@ import { eq } from 'drizzle-orm';
 import { db } from './db';
 import { users as userTable } from './schema';
 import { env } from './env';
+import { verifyCredentialsImpl } from './signup';
+import { bootstrapAdmin } from './bootstrap-admin';
 
 const E2E_TEST_EMAIL = 'e2e@test.local';
 
-const baseProviders: NextAuthConfig['providers'] = [GitHub, Google];
+void bootstrapAdmin().catch((err) => {
+  console.error('[bootstrap-admin] failed:', err);
+});
+
+const providers: NextAuthConfig['providers'] = [
+  GitHub,
+  Google,
+  Credentials({
+    name: 'username',
+    credentials: {
+      username: { label: 'Username', type: 'text' },
+      password: { label: 'Password', type: 'password' },
+    },
+    authorize: async (creds) => {
+      const user = await verifyCredentialsImpl(db, creds);
+      if (!user) return null;
+      return { id: user.id, name: user.name, role: user.role };
+    },
+  }),
+];
 
 if (env.E2E_TEST === '1') {
-  baseProviders.push(
+  providers.push(
     Credentials({
+      id: 'e2e',
       name: 'E2E Test',
       credentials: { email: { label: 'Email', type: 'email' } },
       authorize: async (creds) => {
@@ -41,19 +63,24 @@ if (env.E2E_TEST === '1') {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db),
-  providers: baseProviders,
-  session: { strategy: env.E2E_TEST === '1' ? 'jwt' : 'database' },
+  providers,
+  session: { strategy: 'jwt' },
   pages: { signIn: '/signin' },
   callbacks: {
-    // In JWT mode (E2E only), surface the user id on session.user so server
-    // actions that read session.user.id behave the same as in DB-session mode.
     async jwt({ token, user }) {
-      if (user?.id) token.sub = user.id;
+      if (user?.id) {
+        token.sub = user.id;
+        const fresh = await db.query.users.findFirst({
+          where: eq(userTable.id, user.id),
+        });
+        token.role = fresh?.role ?? 'user';
+      }
       return token;
     },
-    async session({ session, token, user }) {
+    async session({ session, token }) {
       if (session.user) {
-        session.user.id = (user?.id ?? token?.sub) as string;
+        session.user.id = token.sub as string;
+        session.user.role = (token.role as string | undefined) ?? 'user';
       }
       return session;
     },
