@@ -26,3 +26,30 @@ export async function seedUser(
   await db.insert(schema.users).values(user);
   return user;
 }
+
+export async function seedPosts(
+  db: TestDb,
+  slugs: string[],
+  authorId?: string,
+): Promise<void> {
+  if (slugs.length === 0) return;
+  const aid = authorId ?? (await seedUser(db)).id;
+  await db.insert(schema.posts).values(
+    slugs.map((slug, i) => ({
+      slug,
+      id: `0x${(0x100 + i).toString(16)}`,
+      title: `Post ${slug}`,
+      excerpt: `Excerpt ${slug}`,
+      body: `Body ${slug}`,
+      category: 'celestial',
+      tags: [],
+      date: '2026-04-22',
+      readTime: 5,
+      size: 'small' as const,
+      cover: 'jovian',
+      featured: false,
+      draft: false,
+      authorId: aid,
+    })),
+  );
+}

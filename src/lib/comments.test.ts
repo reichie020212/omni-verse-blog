@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { eq } from 'drizzle-orm';
-import { makeTestDb, seedUser, type TestDb } from './test-db';
+import { makeTestDb, seedUser, seedPosts, type TestDb } from './test-db';
 import * as schema from './schema';
 import { addCommentImpl, deleteCommentImpl, listCommentsImpl } from './comments';
 import * as ratelimit from './ratelimit';
@@ -11,6 +11,7 @@ let user: Awaited<ReturnType<typeof seedUser>>;
 beforeEach(async () => {
   db = await makeTestDb();
   user = await seedUser(db);
+  await seedPosts(db, ['x', 'y', 'why-the-jovian-moons'], user.id);
   ratelimit.reset();
   vi.useFakeTimers();
   vi.setSystemTime(new Date('2026-04-26T12:00:00Z'));

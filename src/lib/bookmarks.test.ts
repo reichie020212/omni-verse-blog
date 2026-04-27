@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { eq } from 'drizzle-orm';
-import { makeTestDb, seedUser, type TestDb } from './test-db';
+import { makeTestDb, seedUser, seedPosts, type TestDb } from './test-db';
 import * as schema from './schema';
 import {
   mergeBookmarksImpl,
@@ -14,6 +14,7 @@ let user: Awaited<ReturnType<typeof seedUser>>;
 beforeEach(async () => {
   db = await makeTestDb();
   user = await seedUser(db);
+  await seedPosts(db, ['a', 'b', 'c', 'x', 'y', 'foo'], user.id);
 });
 
 describe('mergeBookmarks', () => {

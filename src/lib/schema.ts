@@ -56,7 +56,9 @@ export const likes = sqliteTable(
     userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    postSlug: text('post_slug').notNull(),
+    postSlug: text('post_slug')
+      .notNull()
+      .references(() => posts.slug, { onDelete: 'cascade' }),
     createdAt: integer('created_at', { mode: 'timestamp_ms' })
       .notNull()
       .default(sql`(unixepoch() * 1000)`),
@@ -70,7 +72,9 @@ export const bookmarks = sqliteTable(
     userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    postSlug: text('post_slug').notNull(),
+    postSlug: text('post_slug')
+      .notNull()
+      .references(() => posts.slug, { onDelete: 'cascade' }),
     createdAt: integer('created_at', { mode: 'timestamp_ms' })
       .notNull()
       .default(sql`(unixepoch() * 1000)`),
@@ -85,7 +89,9 @@ export const comments = sqliteTable(
     userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    postSlug: text('post_slug').notNull(),
+    postSlug: text('post_slug')
+      .notNull()
+      .references(() => posts.slug, { onDelete: 'cascade' }),
     body: text('body').notNull(),
     createdAt: integer('created_at', { mode: 'timestamp_ms' })
       .notNull()
@@ -129,10 +135,22 @@ export const usersRelations = relations(users, ({ many }) => ({
   posts: many(posts),
 }));
 
-export const postsRelations = relations(posts, ({ one }) => ({
+export const postsRelations = relations(posts, ({ one, many }) => ({
   author: one(users, { fields: [posts.authorId], references: [users.id] }),
+  likes: many(likes),
+  bookmarks: many(bookmarks),
+  comments: many(comments),
+}));
+
+export const likesRelations = relations(likes, ({ one }) => ({
+  post: one(posts, { fields: [likes.postSlug], references: [posts.slug] }),
+}));
+
+export const bookmarksRelations = relations(bookmarks, ({ one }) => ({
+  post: one(posts, { fields: [bookmarks.postSlug], references: [posts.slug] }),
 }));
 
 export const commentsRelations = relations(comments, ({ one }) => ({
   user: one(users, { fields: [comments.userId], references: [users.id] }),
+  post: one(posts, { fields: [comments.postSlug], references: [posts.slug] }),
 }));

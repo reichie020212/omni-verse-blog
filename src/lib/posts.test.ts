@@ -12,7 +12,8 @@ import {
   type Post,
 } from './posts';
 import { makeTestDb, seedUser } from './test-db';
-import { posts as postsTable } from './schema';
+import { posts as postsTable, likes, bookmarks, comments } from './schema';
+import { eq } from 'drizzle-orm';
 
 const VALID = `---
 id: '0x4f2'
@@ -284,6 +285,48 @@ describe('DB-backed impls', () => {
 
     const withoutDrafts = await getPostBySlugImpl(db, 'wip', { includeDrafts: false });
     expect(withoutDrafts).toBeUndefined();
+  });
+});
+
+describe('engagement cascade on post delete', () => {
+  function rowFor(slug: string, authorId: string) {
+    return {
+      slug,
+      id: `0x${slug.charCodeAt(0).toString(16).padStart(3, '0')}`,
+      title: `Title ${slug}`,
+      excerpt: `Excerpt ${slug}`,
+      body: `Body ${slug}`,
+      category: 'celestial',
+      tags: ['x'],
+      date: '2026-04-22',
+      readTime: 7,
+      size: 'medium' as const,
+      cover: 'jovian',
+      featured: false,
+      draft: false,
+      authorId,
+    };
+  }
+
+  it('deleting a post removes its likes, bookmarks, and comments', async () => {
+    const db = await makeTestDb();
+    const author = await seedUser(db);
+    const reader = await seedUser(db);
+
+    await db.insert(postsTable).values(rowFor('cascade', author.id));
+    await db.insert(likes).values({ userId: reader.id, postSlug: 'cascade' });
+    await db.insert(bookmarks).values({ userId: reader.id, postSlug: 'cascade' });
+    await db.insert(comments).values({ userId: reader.id, postSlug: 'cascade', body: 'hi' });
+
+    await db.delete(postsTable).where(eq(postsTable.slug, 'cascade'));
+
+    expect(await db.select().from(likes).where(eq(likes.postSlug, 'cascade'))).toHaveLength(0);
+    expect(
+      await db.select().from(bookmarks).where(eq(bookmarks.postSlug, 'cascade')),
+    ).toHaveLength(0);
+    expect(
+      await db.select().from(comments).where(eq(comments.postSlug, 'cascade')),
+    ).toHaveLength(0);
   });
 });
 
