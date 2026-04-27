@@ -10,8 +10,11 @@ pnpm install
 cp .env.example .env.local
 pnpm auth:secret  # paste output into AUTH_SECRET in .env.local
 pnpm db:migrate
+pnpm migrate:posts  # seed the posts table from content/posts/*.mdx
 pnpm dev
 ```
+
+Posts live in the `posts` table. Create / edit / delete them at `/admin/posts` once you're signed in as an admin (set `ADMIN_USERNAME` and `ADMIN_PASSWORD` in `.env.local` for username-password admin sign-in, or grant role manually with `UPDATE "user" SET role='admin' WHERE id=...`).
 
 OAuth providers are optional in dev. To enable sign-in locally, register a GitHub OAuth app at <https://github.com/settings/developers> with callback `http://localhost:3000/api/auth/callback/github`, and a Google OAuth client at <https://console.cloud.google.com/apis/credentials> with callback `http://localhost:3000/api/auth/callback/google`. Paste the client IDs/secrets into `.env.local`.
 
@@ -22,7 +25,7 @@ OAuth providers are optional in dev. To enable sign-in locally, register a GitHu
 | `pnpm dev` | Next.js dev server with HMR |
 | `pnpm build` | Production build (runs `db:migrate` → `prebuild` → `next build`) |
 | `pnpm start` | Run the production build |
-| `pnpm new-post` | Interactive post scaffolder (see CONTRIBUTING.md) |
+| `pnpm migrate:posts` | Seed/refresh the `posts` table from `content/posts/*.mdx` (idempotent; recovery path + E2E fixture loader) |
 | `pnpm typecheck` | `tsc --noEmit` |
 | `pnpm lint` | `next lint` |
 | `pnpm test` | Vitest unit suite |

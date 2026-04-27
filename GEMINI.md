@@ -8,7 +8,7 @@ In Red's workflow, **Gemini is the Architect**: high-level plans, schema design,
 
 - **Framework:** Next.js 15 App Router, React 19, React Server Components (RSC) by default
 - **Language:** TypeScript strict mode
-- **Content:** MDX in `content/posts/` with YAML frontmatter, validated by Zod, rendered via `next-mdx-remote/rsc`
+- **Content:** Posts live in the libsql `posts` table; MDX bodies render via `next-mdx-remote/rsc` at request time. `content/posts/*.mdx` are kept as fixtures (E2E re-seeds via `pnpm migrate:posts`) and a recovery backup, not the canonical source. Admin edits at `/admin/posts` write straight to the DB.
 - **Auth:** Auth.js v5 (`next-auth@5.x` beta) with GitHub + Google providers, DB-backed sessions
 - **DB:** Drizzle ORM + libsql (`@libsql/client`). Local: `file:local.db`. Self-host: same client, sqlite file on a host bind mount (`./data/local.db`).
 - **Search:** fuse.js client-side; build-time `public/search-index.json`
@@ -19,7 +19,7 @@ In Red's workflow, **Gemini is the Architect**: high-level plans, schema design,
 ## Directory layout
 
 ```
-content/posts/             ← MDX posts, one per file
+content/posts/             ← MDX fixtures (not the canonical source — see Content above)
 public/
   covers/                  ← real JPG covers (optional, fallback to SVG generators)
   search-index.json        ← prebuild artifact (gitignored)
@@ -30,7 +30,7 @@ scripts/
   build-cover-manifest.ts  ← prebuild: scans public/covers/ for JPGs
   build-og-cards.ts        ← prebuild: satori + resvg-js per-post OG PNGs
   capture-guide-screenshots.ts  ← Playwright screenshot capture for docs/guide/
-  new-post.ts              ← interactive `pnpm new-post` CLI
+  migrate-posts-to-db.ts   ← idempotent MDX → posts-table seed (E2E uses this; recovery path)
   start.mjs                ← container entrypoint: programmatic Drizzle migrate → Next standalone
   backup-blog-db.sh        ← daily sqlite backup (host-side, called by launchd)
   launchd/                 ← macOS launchd plist for the backup
@@ -79,7 +79,7 @@ docker-compose.yml         ← web + cloudflared services
 - `pnpm test` — Vitest run (123 tests)
 - `pnpm e2e` — Playwright + axe-core (6 specs)
 - `pnpm validate` — typecheck + lint + test (the pre-commit gate)
-- `pnpm new-post` — interactive post scaffolder
+- `pnpm migrate:posts` — idempotent: seed/refresh `posts` from `content/posts/*.mdx`
 - `pnpm db:generate` / `db:migrate` / `db:studio` — Drizzle Kit
 
 ## Gotchas

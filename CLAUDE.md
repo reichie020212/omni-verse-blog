@@ -6,10 +6,10 @@ This is **Omni-Verse Blog**, Red's personal blog. Read this file before doing an
 
 - **Framework:** Next.js 15 App Router, React 19, React Server Components (RSC) by default
 - **Language:** TypeScript strict mode
-- **Content:** MDX in `content/posts/` with YAML frontmatter, validated by Zod, rendered via `next-mdx-remote/rsc`
-- **Auth:** Auth.js v5 (`next-auth@5.x` beta) with GitHub + Google providers, DB-backed sessions
+- **Content:** Posts live in the libsql `posts` table; MDX bodies are rendered via `next-mdx-remote/rsc` at request time. `content/posts/*.mdx` are kept in-tree as **fixtures** (E2E global-setup re-seeds from them via `pnpm migrate:posts`) and as a recovery backup, but they are not the canonical source — admin edits via `/admin/posts` write straight to the DB.
+- **Auth:** Auth.js v5 (`next-auth@5.x` beta) with GitHub + Google + username/password providers, DB-backed sessions, role-gated admin (`users.role = 'admin'`).
 - **DB:** Drizzle ORM + libsql (`@libsql/client`). Local: `file:local.db`. Self-host: same client, sqlite file on a host bind mount (`./data/local.db`).
-- **Search:** fuse.js client-side; build-time `public/search-index.json`
+- **Search:** fuse.js client-side; live `data/search-index.json` regenerated on every admin write and served via `/api/search-index.json`.
 - **Styling:** `src/styles/globals.css` verbatim from the prototype (`/Users/red/ClaudeDesign/blog/styles.css`). Don't drift the design language unilaterally.
 - **Tests:** Vitest (unit + library) — 123 tests. Playwright + `@axe-core/playwright` (E2E) — 6 specs.
 - **Deploy target:** Self-hosted on Red's Mac mini M4 Pro via Docker Compose + Cloudflare Tunnel (no Caddy, no port-forwarding; CF terminates TLS at the edge). **Not** Vercel, **not** Turso.
@@ -17,22 +17,20 @@ This is **Omni-Verse Blog**, Red's personal blog. Read this file before doing an
 ## Directory layout
 
 ```
-content/posts/             ← MDX posts, one per file
+content/posts/             ← MDX fixtures (not the canonical source — see Content above)
 public/
   covers/                  ← real JPG covers (optional, fallback to SVG generators)
   search-index.json        ← prebuild artifact (gitignored)
   og/                      ← per-post OG card PNGs (gitignored, regenerated each build)
 assets/fonts/              ← .ttf files vendored for OG card rendering (Source Serif 4, JetBrains Mono)
 scripts/
-  build-search-index.ts    ← prebuild: client-side search index
   build-cover-manifest.ts  ← prebuild: scans public/covers/ for JPGs
-  build-og-cards.ts        ← prebuild: satori + resvg-js per-post OG PNGs
   capture-guide-screenshots.ts  ← reproducible Playwright screenshots for docs/guide/
-  new-post.ts              ← interactive `pnpm new-post` CLI
+  migrate-posts-to-db.ts   ← one-time MDX → posts-table seed; idempotent. Reused by E2E global-setup.
   start.mjs                ← container entrypoint: programmatic Drizzle migrate → Next.js standalone server
   backup-blog-db.sh        ← daily sqlite backup (host-side, called by launchd)
   launchd/                 ← macOS launchd plist for the backup
-  migrate-data.ts          ← one-time data.jsx → MDX (already run)
+  migrate-data.ts          ← one-time data.jsx → MDX (already run; archived for history)
 src/
   app/                     ← App Router
     @drawer/(.)posts/[slug]/page.tsx   ← intercepted drawer route
@@ -42,7 +40,7 @@ src/
     feed.xml/route.ts                  ← Atom feed
   components/              ← React components, RSC by default
   covers/                  ← per-cover SVG generators (one file each) + manifest.ts (auto-generated)
-  lib/                     ← pure logic + utilities (env, posts, feed, new-post, ...)
+  lib/                     ← pure logic + utilities (env, posts, feed, posts-admin, ...)
 e2e/                       ← Playwright specs + helpers + global-setup
 drizzle/                   ← generated migrations (committed)
 docs/
@@ -79,7 +77,7 @@ docker-compose.yml         ← web + cloudflared services
 - `pnpm test` — Vitest run (123 tests)
 - `pnpm e2e` — Playwright + axe-core (6 specs; runs `pnpm build` first)
 - `pnpm validate` — typecheck + lint + test (the pre-commit gate)
-- `pnpm new-post` — interactive post scaffolder
+- `pnpm migrate:posts` — one-shot/idempotent: seed/refresh the `posts` table from `content/posts/*.mdx` (used by E2E global-setup; also the recovery path)
 - `pnpm db:generate` / `db:migrate` / `db:studio` — Drizzle Kit
 
 ## Gotchas
@@ -104,8 +102,9 @@ docker-compose.yml         ← web + cloudflared services
 - **Phase 3** (auth/DB/likes/bookmarks/comments): merged, `9dfa055`
 - **Phase 4a** (CLI, OG/SEO/RSS, JPG covers, Lighthouse, a11y, E2E, docs): merged, `b111155`
 - **Phase 4b** (self-host: Docker, compose, Cloudflare Tunnel, backups, OAuth callbacks, CI): merged, `2e3bfb5`
+- **Posts → DB migration** (live admin CRUD, runtime search index + OG cards, engagement FKs): merged, see `git log --grep "posts → DB"` for the 8-phase commit history starting at `2fddda5`.
 
-The product is feature-complete. No further phases are planned. Specs and plans live in `docs/superpowers/specs/` and `docs/superpowers/plans/`.
+Specs and plans live in `docs/superpowers/specs/` and `docs/superpowers/plans/`.
 
 ## Documentation map
 

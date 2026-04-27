@@ -1,11 +1,27 @@
 # Author's guide
 
-How to write, preview, and publish a post on Omni-Verse Blog. Pair this with [`CONTRIBUTING.md`](../../CONTRIBUTING.md) (the schema reference) and [`README.md`](../../README.md) (scripts + env setup).
+> **2026-04-28 — workflow updated.** Posts now live in the database and you create / edit / delete them in the browser at `/admin/posts`. No `pnpm new-post`, no MDX file commits, no redeploy. The sections below from "`pnpm new-post`" onward describe the **legacy CLI workflow** and are kept for historical reference; the screenshots are stale. The schema itself is unchanged — see [`CONTRIBUTING.md`](../../CONTRIBUTING.md) for the field reference, which has been updated for the new flow.
 
-## The whole loop in one screen
+## The current loop
+
+1. Sign in as admin (set `ADMIN_USERNAME`/`ADMIN_PASSWORD` in `.env.local`, or grant `role='admin'` on an existing user).
+2. Visit `/admin/posts`. The table lists every post including drafts.
+3. **+ New post** → fill the form → submit. The post lands in the `posts` table; the home page, sitemap, search index, and OG card update on the next request (no redeploy).
+4. Edit any post via its row's "Edit" link. Body is a raw MDX `<textarea>`. Save returns you to the list.
+5. Delete via the red **Delete post** button on the edit page.
+
+In production (self-hosted on the Mac mini), changes are live the moment the server action returns. The nightly sqlite backup (per `DEPLOY.md`) covers rollback.
+
+If the DB is wiped, re-seed from the in-tree fixtures with `pnpm migrate:posts`.
+
+---
+
+## Legacy CLI workflow (kept for history)
+
+The text below describes the pre-2026-04-28 workflow where posts were MDX files in `content/posts/`. The CLI has been removed. The MDX files are still in the repo as fixtures + recovery seed data, but they are not the canonical source.
 
 ```
-pnpm new-post           # scaffold a draft
+pnpm new-post           # scaffold a draft   (REMOVED)
 $EDITOR content/posts/<slug>.mdx
 pnpm dev                # live preview at http://localhost:3000
 # write, save, repeat — Next picks up changes via HMR
