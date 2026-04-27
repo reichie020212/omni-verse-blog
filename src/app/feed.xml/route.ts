@@ -2,7 +2,7 @@ import { env } from '@/lib/env';
 import { getAllPosts } from '@/lib/posts';
 import { buildAtomFeed } from '@/lib/feed';
 
-export const dynamic = 'force-static';
+export const dynamic = 'force-dynamic';
 
 export async function GET(): Promise<Response> {
   const posts = (await getAllPosts()).slice(0, 30);

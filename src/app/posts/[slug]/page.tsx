@@ -7,6 +7,8 @@ import { RelatedPosts } from '@/components/RelatedPosts';
 import { CommentList } from '@/components/CommentList';
 import { CommentForm } from '@/components/CommentForm';
 
+export const dynamic = 'force-dynamic';
+
 export async function generateStaticParams() {
   const posts = await getAllPosts();
   return posts.map((p) => ({ slug: p.slug }));

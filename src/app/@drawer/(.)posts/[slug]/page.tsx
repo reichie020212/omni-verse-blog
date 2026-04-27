@@ -8,6 +8,8 @@ import { RelatedPosts } from '@/components/RelatedPosts';
 import { CommentList } from '@/components/CommentList';
 import { CommentForm } from '@/components/CommentForm';
 
+export const dynamic = 'force-dynamic';
+
 export default async function InterceptedPost({
   params,
 }: {

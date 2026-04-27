@@ -3,6 +3,8 @@ import { env } from '@/lib/env';
 import { getAllPosts } from '@/lib/posts';
 import { CATEGORIES } from '@/lib/categories';
 
+export const dynamic = 'force-dynamic';
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await getAllPosts();
   const base = env.SITE_URL.replace(/\/$/, '');

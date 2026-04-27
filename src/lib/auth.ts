@@ -44,7 +44,16 @@ if (env.E2E_TEST === '1') {
         const existing = await db.query.users.findFirst({
           where: eq(userTable.email, E2E_TEST_EMAIL),
         });
-        if (existing) return existing;
+        if (existing) {
+          if (existing.role !== 'admin') {
+            await db
+              .update(userTable)
+              .set({ role: 'admin' })
+              .where(eq(userTable.id, existing.id));
+            return { ...existing, role: 'admin' };
+          }
+          return existing;
+        }
         const [created] = await db
           .insert(userTable)
           .values({
@@ -53,6 +62,7 @@ if (env.E2E_TEST === '1') {
             name: 'E2E User',
             emailVerified: null,
             image: null,
+            role: 'admin',
           })
           .returning();
         return created;

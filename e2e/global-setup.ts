@@ -17,12 +17,14 @@ export default async function globalSetup(): Promise<void> {
 
   // Wipe all user-created rows so each test run starts clean.
   // This is safe because we share the same file (same inode) as the server.
+  // Posts must be wiped before users (posts.author_id references "user").
   const client = createClient({ url: dbUrl });
   try {
     await client.executeMultiple(`
       DELETE FROM comments;
       DELETE FROM bookmarks;
       DELETE FROM likes;
+      DELETE FROM posts;
       DELETE FROM session;
       DELETE FROM account;
       DELETE FROM "user";
@@ -30,4 +32,12 @@ export default async function globalSetup(): Promise<void> {
   } finally {
     client.close();
   }
+
+  // Re-populate posts from content/posts/ so reader-facing tests have a real
+  // grid to render. migrate-posts-to-db.ts also bootstraps the admin user
+  // (ADMIN_USERNAME/ADMIN_PASSWORD from .env.local).
+  execSync('pnpm migrate:posts', {
+    stdio: 'inherit',
+    env: { ...process.env, DATABASE_URL: dbUrl },
+  });
 }

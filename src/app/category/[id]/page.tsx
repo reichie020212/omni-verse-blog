@@ -6,6 +6,8 @@ import { FilteredGrid } from '@/components/FilteredGrid';
 import { FilterChips, type ActiveFilter } from '@/components/FilterChips';
 import { SortDropdown } from '@/components/SortDropdown';
 
+export const dynamic = 'force-dynamic';
+
 export async function generateStaticParams() {
   return CATEGORIES.filter((c) => c.id !== 'all').map((c) => ({ id: c.id }));
 }
