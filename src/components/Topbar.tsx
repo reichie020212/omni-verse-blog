@@ -20,7 +20,7 @@ export async function Topbar() {
         </span>
       </Link>
       <SearchInput />
-      <nav aria-label="Primary" className="topbar-nav">
+      <nav aria-label="Primary" className="topbar-actions">
         <ThemeToggle />
         {session?.user ? (
           <UserMenu
@@ -28,6 +28,7 @@ export async function Topbar() {
               id: session.user.id!,
               name: session.user.name,
               image: session.user.image,
+              role: session.user.role,
             }}
           />
         ) : (

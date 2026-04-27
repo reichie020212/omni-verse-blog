@@ -4,7 +4,12 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { signOut } from 'next-auth/react';
 
-type UserLite = { id: string; name?: string | null; image?: string | null };
+type UserLite = {
+  id: string;
+  name?: string | null;
+  image?: string | null;
+  role?: string | null;
+};
 
 export function UserMenu({ user }: { user: UserLite }) {
   const [open, setOpen] = useState(false);
@@ -46,14 +51,32 @@ export function UserMenu({ user }: { user: UserLite }) {
       </button>
       {open && (
         <div className="user-menu-panel" role="menu">
-          <Link href="/bookmarks" className="user-menu-item" role="menuitem">
+          {user.role === 'admin' && (
+            <Link
+              href="/admin/posts"
+              className="user-menu-item"
+              role="menuitem"
+              onClick={() => setOpen(false)}
+            >
+              Admin
+            </Link>
+          )}
+          <Link
+            href="/bookmarks"
+            className="user-menu-item"
+            role="menuitem"
+            onClick={() => setOpen(false)}
+          >
             Bookmarks
           </Link>
           <button
             type="button"
             className="user-menu-item"
             role="menuitem"
-            onClick={() => signOut({ redirectTo: '/' })}
+            onClick={() => {
+              setOpen(false);
+              void signOut({ redirectTo: '/' });
+            }}
           >
             Sign out
           </button>
