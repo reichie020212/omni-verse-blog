@@ -74,6 +74,11 @@ COPY --from=build --chown=nextjs:nodejs /app/scripts/start.mjs ./start.mjs
 # and so libsql's native binding (@libsql/linux-arm64-musl) is present.
 COPY --from=prod-deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 
+# search-index.json is regenerated at runtime into ./data (relative to cwd =
+# /app). /app is owned by root from WORKDIR, so create the dir with the right
+# ownership before dropping privileges.
+RUN mkdir -p /app/data && chown nextjs:nodejs /app/data
+
 USER nextjs
 EXPOSE 3000
 
