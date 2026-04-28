@@ -728,6 +728,20 @@ button { font-family: inherit; cursor: pointer; }
   font-weight: 400;
   text-wrap: pretty;
 }
+.article-cover {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--bg-subtle);
+  margin: 0 0 28px;
+}
+.article-cover svg,
+.article-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 .article-author {
   display: flex;
   align-items: center;
