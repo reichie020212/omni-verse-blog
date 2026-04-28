@@ -3,6 +3,7 @@ import { upsertPostAction } from '@/lib/posts-admin-actions';
 import { CATEGORY_IDS } from '@/lib/categories';
 import { COVER_GENERATOR_NAMES } from '@/covers';
 import type { Post } from '@/lib/posts';
+import { CoverImageField } from './CoverImageField';
 
 const SIZES = ['hero', 'wide', 'medium', 'small'] as const;
 const FIELD = { display: 'flex', flexDirection: 'column' as const, gap: '0.25rem' };
@@ -127,12 +128,7 @@ export function AdminPostForm({ initial }: { initial?: Post }) {
             </>
           )}
         </p>
-        <input
-          type="file"
-          name="coverImage"
-          accept="image/jpeg,image/png,image/webp"
-          style={{ marginTop: '0.5rem' }}
-        />
+        <CoverImageField />
         {initial?.hasCoverImage && (
           <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
             <input type="checkbox" name="removeCoverImage" />
