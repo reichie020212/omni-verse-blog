@@ -1,18 +1,11 @@
 import { notFound } from 'next/navigation';
 import { Sidebar } from '@/components/Sidebar';
-import { applySort, getAllPosts, getPostsByTag, type Sort } from '@/lib/posts';
+import { applySort, getPostsByTag, type Sort } from '@/lib/posts';
 import { FilteredGrid } from '@/components/FilteredGrid';
 import { FilterChips, type ActiveFilter } from '@/components/FilterChips';
 import { SortDropdown } from '@/components/SortDropdown';
 
 export const dynamic = 'force-dynamic';
-
-export async function generateStaticParams() {
-  const posts = await getAllPosts();
-  const tags = new Set<string>();
-  for (const p of posts) for (const t of p.tags) tags.add(t);
-  return [...tags].map((name) => ({ name }));
-}
 
 export async function generateMetadata({
   params,

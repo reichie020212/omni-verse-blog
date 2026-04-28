@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getAllPosts, getPostBySlug } from '@/lib/posts';
+import { getPostBySlug } from '@/lib/posts';
 import { ArticleHeader } from '@/components/ArticleHeader';
 import { ArticleBody } from '@/components/ArticleBody';
 import { ArticleFooter } from '@/components/ArticleFooter';
@@ -8,11 +8,6 @@ import { CommentList } from '@/components/CommentList';
 import { CommentForm } from '@/components/CommentForm';
 
 export const dynamic = 'force-dynamic';
-
-export async function generateStaticParams() {
-  const posts = await getAllPosts();
-  return posts.map((p) => ({ slug: p.slug }));
-}
 
 export async function generateMetadata({
   params,
